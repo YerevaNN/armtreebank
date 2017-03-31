@@ -1,0 +1,31 @@
+{% for s in segments %}
+  <div class="ui segments">
+    <div class="ui segment"><span class="id">{{s.id}}.</span>{{s.segment}}</div>
+    <div class="ui segment teal secondary tokens-parent">
+      <div class="ui floating labeled icon dropdown button">
+        <i class="dropdown icon"></i>
+        <span class="text">Հորիզոնական</span>
+        <div class="menu">
+          <div class="item active selected" onclick="core.toknz.process.orientation(event, 0)">Հորիզոնական</div>
+          <div class="item" onclick="core.toknz.process.orientation(event, 1)">Ուղղահայաց</div>
+        </div>
+      </div>
+      <div class="ui steps tokens">
+      {% for t in s.tokens %}
+        <div class="step">
+          <div class="content">
+            <div class="title"><span class="id">{{t.0}}</span>{{t.1}}</div>
+          </div>
+        </div>
+      {% endfor %}
+      </div>
+      <div class="ui segments tokens hidden">
+      {% for t in s.tokens %}
+        <div class="ui segment">
+          <p><span class="id">{{t.0}}</span>{{t.1}}</p>
+        </div>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
+{% endfor %}

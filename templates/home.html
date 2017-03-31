@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Գլխավոր էջ | ՀայՇտեմ{% endblock %}
+{% block sources %}<link rel="stylesheet" href="/core{% static 'css/home.css' %}" type="text/css">{% endblock %}
+
+{% block content %}
+<div class="main-content no-padding home">
+  <div class="header_">
+    <div class="ui container">
+      <div class="ui grid">
+        <div class="nine wide column middle aligned description">
+          <p class="text">«ՀայՇտեմ»֊ը արդի արևելահայերենի մասնագիտացված լեզվաբանական կորպուս է, ուղղված մեքենայական ուսուցմամբ ձևաբանական և շարահյուսական վերլուծիչ, ինչպես նաև իմաստաբանաան բաղադրիչ պարունակող շարահյուսական ծառերի շտեմարան ստեղծելու նպատակին:</p>
+        </div>
+        <div class="one wide column"></div>
+        <div class="six wide column logo">
+          <h1 class="name">ՀայՇտեմ</h1>
+          <h4 class="title">Արևելահայերենի շարահյուսական վերլուծիչ ու շարահյուսական ծառերի շտեմարան</h4>
+        </div>
+      </div>
+     </div>
+  </div>
+</div>
+{% endblock %}

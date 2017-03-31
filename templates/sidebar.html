@@ -1,0 +1,31 @@
+{% load static %}
+<a class="ajax item" href="{% url 'home' %}">ՀայՇտեմ</a>
+<div class="right menu">
+  <a class="ajax item" href="{% url 'about' %}">Բնութագիր</a>
+  <a class="ajax item" href="{% url 'process' %}">Թոքենիզացիա</a>
+  <div class="ui pointing dropdown item">
+    Մատենագրություն
+    <i class="dropdown icon"></i>
+    <div class="menu">
+      <a class="ajax item" href="{% url 'list_view_bibliography' 1 %}">Դիտել մատենագրությունները</a>
+      {% if auth %}
+      <a class="ajax item" href="{% url 'create_bibliography' %}">Ստեղծել նորը</a>
+      {% else %}
+      <a class="item disabled">Ստեղծել նորը(Մուտք գործեք)</a>
+      {% endif %}
+    </div>
+  </div>
+  {% if auth %}
+  <a class="item">{{ user.user.first_name }}</a>
+  <div class="item">
+    <div class="ui primary button" onclick="core.userAuth.signOut()">Դուրս գալ</div>
+    <form id="sign-out-form" class="hidden" method="POST" action="{% url 'logout' %}">
+      {% csrf_token %}
+    </form>
+  </div>
+  {% else %}
+  <div class="item">
+      <div onclick="$('#signin-modal.modal').modal('show')" class="ui primary button">Մուտք գործել</div>
+  </div>
+  {% endif %}
+</div>

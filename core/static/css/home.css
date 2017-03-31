@@ -1,0 +1,35 @@
+.home .header_ {
+  background: #2185d0;
+  margin-top: 14px;
+  color: white;
+}
+
+.home .header_ .column {
+  padding: 0 20px!important;
+}
+
+.home .header_ .description .text {
+  font-size: 15px;
+  color: #eee;
+  text-align: left;
+}
+
+.home .header_ .logo {
+  padding: 30px 20px!important;
+  background: rgba(255, 255, 255, 0.2);
+  border-bottom: 7px solid rgba(255, 255, 255, 0.5);
+}
+
+.home .header_ .name {
+  padding: 20px 0;
+  font-size: 70px;
+  font-weight: 300;
+  text-align: center;
+}
+
+.home .header_ .title {
+  font-size: 14px;
+  font-weight: 100;
+  color: #eee;
+  text-align: center;
+}

@@ -1,0 +1,78 @@
+{% if not auth %}
+<div id="signin-modal" class="ui modal">
+  <div class="header">
+    <h3>Մուտք</h3>
+  </div>
+  <div class="content">
+    <form method="POST" action="{% url 'login' %}" class="ui form">
+      {% csrf_token %}
+      <div class="field">
+        <label>Մուտքանուն:</label>
+        <input type="text" name="username" placeholder="Մուտքանուն">
+      </div>
+      <div class="field">
+        <label>Գաղտնաբառ:</label>
+        <input type="password" name="password" placeholder="Գաղտնաբառ">
+      </div>
+    </form>
+    <div class="ui negative message hidden">
+      <i class="close icon"></i>
+      <div class="header">
+        Սխալմունք
+      </div>
+      <p>Ներմուծած տվյալները սխալ են</p>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui primary button" onclick="core.userAuth.signIn()">Մուտք գործել</div>
+    <div class="ui secondary button" onclick="$('#signin-modal.modal').modal('hide')">Փակել</div>
+  </div>
+</div>
+{% else %}
+<div id="author-modal" class="ui modal">
+  <div class="header">
+    <h3>Ավելացնել նոր հեղինակ</h3>
+  </div>
+  <div class="content">
+    <form method="POST" action="{% url 'create_author' %}" class="ui form">
+      {% csrf_token %}
+      <div class="field">
+        <div class="three fields">
+          <div class="field">
+            <input type="text" name="author_name" placeholder="Հեղինակի անունը, ազգանունը">
+          </div>
+          <div class="field">
+            <input type="text" name="author_patronymic" placeholder="Հեղինակի հայրանունը">
+          </div>
+          <div class="field">
+            <input type="text" name="author_pseudonym" placeholder="Հեղինակի կեղծանունը">
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <input type="text" name="author_birth_date" placeholder="Հեղինակի ծննդյան տարեթիվը(տարի-ամիս-օր)">
+          </div>
+          <div class="field">
+            <div class="ui checkbox death-checkbox" onclick="core.biblg.authorModel.addDeathDate(event)">
+              <input type="checkbox" class="hidden">
+              <label>Հեղինակը մահացած է</label>
+            </div>
+            <input class="hidden death-input" type="text" name="author_death_date" placeholder="Հեղինակի մահվան տարեթիվը(տարի-ամիս-օր)" value="0">
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="ui negative message hidden">
+      <i class="close icon"></i>
+      <div class="header">
+        Սխալմունք
+      </div>
+      <p>Ներմուծած տվյալները սխալ են</p>
+    </div>
+  </div>
+  <div class="actions">
+    <div class="ui primary button" onclick="core.biblg.authorModel.create()">Ավելացնել</div>
+    <div class="ui secondary button" onclick="$('#author-modal.modal').modal('hide')">Փակել</div>
+  </div>
+</div>
+{% endif %}

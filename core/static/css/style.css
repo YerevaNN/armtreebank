@@ -1,0 +1,63 @@
+body {
+	background: #f4f4f4;
+  overflow-y: scroll;
+}
+
+body * {
+  word-break: break-word;
+}
+
+.main-menu {
+  margin: 0!important;
+  border-radius: 0!important;
+}
+
+#content-wrapper {
+  min-height: 80%;
+}
+
+.main-content {
+  padding: 25px 0;
+}
+
+.main-content.no-padding {
+  padding: 0;
+}
+
+.tokenization .result .steps {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.tokenization .result .secondary.segment:hover .steps {
+  overflow-x: scroll;
+}
+
+.tokenization .result .steps .step {
+  padding: 10px 20px;
+}
+
+.tokenization .result .steps .step .title {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.tokenization .result .id {
+  color: #00B5AD;
+  margin-right: 7px;
+  font-size: 13px;
+  font-family: 'Roboto';
+}
+
+.footer {
+  margin: 0!important;
+  border-radius: 0!important;
+}
+
+.hidden {
+  display: none!important;
+}
+
+._loader {
+  height: 100px!important;
+}

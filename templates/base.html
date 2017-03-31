@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}ՀայՇտեմ{% endblock %}</title>
+	{% load static %}
+	<!-- JQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <!-- JQuery AJAX Form -->
+  <script src="http://malsup.github.com/jquery.form.js"></script> 
+	<!-- Google Icon Fonts -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!-- Semantic -->
+	<script src="/core{% static 'js/semantic.js' %}" type="text/javascript"></script>
+	<link rel="stylesheet" href="/core{% static 'css/semantic.css' %}" type="text/css">
+	<!-- Sources -->
+	<script src="/core{% static 'js/app.js' %}" type="text/javascript"></script>
+	<link rel="stylesheet" href="/core{% static 'css/style.css' %}" type="text/css">
+  {% block sources %}{% endblock %}
+</head>
+<body>
+	<div class="modals">
+		{% include "modals.html" %}
+		{% block modals %}{% endblock %}
+	</div>
+  <div class="ui large menu main-menu">
+    <div class="ui container">
+      {% block sidebar %}{% include "sidebar.html" %}{% endblock %}
+    </div>
+	</div> 
+  <div id="content-wrapper">
+    {% block content %}{% endblock %}
+  </div>
+  <div class="ui blue segment footer">
+    <div class="ui center-aligned container">
+      <div class="ui grid">
+        <div class="row">
+          <div class="eight wide column">
+            <p>«ՀայՇտեմ»֊ը արդի արևելահայերենի մասնագիտացված լեզվաբանական կորպուս է, ուղղված մեքենայական ուսուցմամբ ձևաբանական և շարահյուսական վերլուծիչ, ինչպես նաև իմաստաբանաան բաղադրիչ պարունակող շարահյուսական ծառերի շտեմարան ստեղծելու նպատակին։ </p>
+          </div>
+          <div class="four wide column right floated">
+            <div class="ui vertical menu right">
+              <div class="item">
+                <div class="header">Լրացուցիչ</div>
+                <div class="menu">
+                  <a class="item">Հետադարձ Կապ</a>
+                  <a class="item">Օգտագործման Կանոններ</a>
+                <div class="item">Հաճախ տրվող հարցեր</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="eight wide column">© {% now 'Y' %} ՀայՇտեմ</div>
+          <div class="four wide column right floated">Երևան, Ալեք Մանուկյան 1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

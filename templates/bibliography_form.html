@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ավելացնել Մատենագրություն | ՀայՇտեմ{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="ui container segment center-aligned">
+    <div class="bibliography-form">
+      <div class="field">
+        <div class="ui warning message">
+          <div class="header">Ցուցմունքներ</div>
+          <ul class="list">
+            <li>Թվականները պետք է լրացվեն հետևյալ ձևաչաթփով` տարի-ամիս-օր, որտեղ տարին,ամիսը և օրը ամբողջ թվեր են:</li>
+            <li>Հեղինակի հայրանունը և կեղծանունը պարտադիր չեն լրացման համար:</li>
+            <li>Տեքստը պետք է ներմուծված լինի utf-8 ֆորմատով:</li>
+            <li>Սեղմած պահեք ctrl կոճակը, եթե ուզում եք ընտրել մի քանի հեղինակ:</li>
+          </ul>
+        </div>
+        <div class="ui floating dropdown labeled icon button">
+          <i class="hand pointer icon"></i>
+          <span class="text">Ընտրեք մատենագրության տիպը</span>
+          <div class="menu">
+            <div class="item" onclick="core.biblg.selectType('textbook')">Դասագիրք</div>
+            <div class="item" onclick="core.biblg.selectType('fiction')">Գեղ. գրականություն</div>
+            <div class="item" onclick="core.biblg.selectType('press')">Մամուլ</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="ui secondary segment hidden simple-author">
+        <div class="ui form">
+          <div class="two fields">
+            <div class="field">
+              <label>Ընտրել հեղինակին</label>
+              {{ text_form.author }}
+            </div>
+            <div class="field">
+              <label>Ավելացնել նոր հեղինակ</label>
+              <div onclick="$('#author-modal.modal').modal('show')" class="ui primary button">Ավելացնել</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="ui secondary segment hidden simple-text">
+        <div class="ui form">
+          <h4 class="ui dividing header">Ավելացնել տեքստ</h4>
+          <div class="field text-name">
+            <label>Տեքստի անվանումը</label>
+            <input type="text" name="text_name" placeholder="Տեքստի անվանումը">
+          </div>
+          <div class="field">
+            <label>Տեքստը</label>
+            <textarea name="text" placeholder="Տեքստը"></textarea>
+          </div>
+          <div class="field">
+            <label>Տվյալներ</label>
+            <div class="four fields">
+              <div class="field">
+                {{ text_form.language }}
+              </div>
+              <div class="field">
+                {{ text_form.dialect }}
+              </div>
+              <div class="field">
+                {{ text_form.spelling }}
+              </div>
+              <div class="field">
+                {{ text_form.ev_letter }}
+              </div>
+            </div>
+          </div>
+          <div class="field author-field"></div>
+        </div>
+      </div>
+    
+      <form action="{% url 'create_done_bibliography' %}" method="POST" class="ui form textbook-form hidden query">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="textbook">
+        <div class="ui info message">Դասագիրք</div>
+        <div class="field">
+          <label>Դասագրքի անվանումը</label>
+          <input type="text" name="name" placeholder="Դասագրքի անվանումը">
+        </div>
+        <div class="field textbook-author author-field"></div>
+        <div class="textbook-texts field"></div>
+        <input type="hidden" id="texts_count" name="texts_count" value="0">
+        <div class="field">
+          <button onclick="core.biblg.textbook.addText()" class="ui labeled icon button form-button">
+            <i class="add icon"></i>
+            Ավելացնել տեքստ
+          </button>
+          <button onclick="core.biblg.textbook.removeText()" class="ui disabled button form-button cancel-added-text">Չեղարկել</button>
+        </div>
+        <div class="field">
+          <label>Ոլորտը</label>
+          {{ textbook_form.sphere }}
+        </div>
+        <div class="three fields">
+          <div class="field">
+            <label>Ստեղծման տարեթիվը</label>
+            <input type="text" name="text_creation_date" placeholder="տարի-ամիս-օր">
+          </div>
+          <div class="field">
+            <label>Հրատարակման տարեթիվը</label>
+            <input type="text" name="text_publication_date" placeholder="տարի-ամիս-օր">
+          </div>
+          <div class="field">
+            <label>Բառանիշների քանակը</label>
+            <input type="text" name="tokens_count" placeholder="Բառանիշների քանակը" value="0">
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <label>Լիցենզիա</label>
+            {{ textbook_form.license }}
+          </div>
+          <div class="field">
+            <label>Հաստատել</label>
+            <button onclick="core.biblg.create('textbook')" class="ui primary button form-button submit">Ավելացնել</button>
+            <div class="ui active inline loader hidden"></div>
+          </div>
+        </div>
+      </form>
+      
+      <form action="{% url 'create_done_bibliography' %}" method="POST" class="ui form fiction-form hidden query">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="fiction">
+        <div class="ui info message">Գեղարվեստական գրականություն</div>
+        <div class="field">
+          <label>Գրքի անվանումը</label>
+          <input type="text" name="name" placeholder="Գրքի անվանումը">
+        </div>
+        <div class="fiction-text field"></div>
+        <div class="four fields">
+          <div class="field">
+            <label>Ժանրը</label>
+            <input type="text" name="genre" placeholder="Ժանրը">
+          </div>
+          <div class="field">
+            <label>Ստեղծման տարեթիվը</label>
+            <input type="text" name="text_creation_date" placeholder="տարի-ամիս-օր">
+          </div>
+          <div class="field">
+            <label>Հրատարակման տարեթիվը</label>
+            <input type="text" name="text_publication_date" placeholder="տարի-ամիս-օր">
+          </div>
+          <div class="field">
+            <label>Բառանիշների քանակը</label>
+            <input type="text" name="tokens_count" placeholder="Բառանիշների քանակը" value="0">
+          </div>
+        </div>
+        <div class="ui info message">Թարգմանվածությունը</div>
+        <div class="three fields">
+          <div class="field">
+            <label>Օրիգինալ լեզու</label>
+            {{ fiction_form.translation_original }}
+          </div>
+          <div class="field">
+            <label>Միջնորդված է</label>
+            {{ fiction_form.mediation }}
+          </div>
+          <div class="field">
+            <label>Միջնորդ լեզու</label>
+            {{ fiction_form.translation_mediator }}
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <label>Թարգմանիչ/ներ</label>
+            {{ fiction_form.translation }}
+          </div>
+          <div class="field">
+            <label>Ավելացնել նորին</label>
+            <div onclick="$('#author-modal.modal').modal('show')" class="ui primary button">Ավելացնել նոր հեղինակ</div>
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <label>Լիցենզիա</label>
+            {{ fiction_form.license }}
+          </div>
+          <div class="field">
+            <label>Հաստատել</label>
+            <button onclick="core.biblg.create('fiction')" class="ui primary button form-button submit">Ավելացնել</button>
+              <div class="ui active inline loader hidden"></div>
+          </div>
+        </div>
+      </form>
+      
+      <form action="{% url 'create_done_bibliography' %}" method="POST" class="ui form press-form hidden query">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="press">
+        <div class="ui info message">Մամուլ</div>
+        <div class="field">
+          <label>Պարբերականի անվանումը</label>
+          <input type="text" name="name" placeholder="Պարբերականի անվանումը">
+        </div>
+        <div class="press-text field"></div>
+        <div class="three fields">
+          <div class="field">
+            <label>Հրատարակման տարեթիվը</label>
+            <input type="text" name="text_publication_date" placeholder="տարի-ամիս-օր">
+          </div>
+          <div class="field">
+            <label>Համարը</label>
+            <div class="ui checkbox number-checkbox" onclick="core.biblg.press.addNumber()">
+              <input type="checkbox" class="hidden">
+              <label>Ավելացնել համար</label>
+            </div>
+            <input class="hidden number-input" type="text" name="number" placeholder="Համարը" value="0">
+          </div>
+          <div class="field">
+            <label>Բառանիշների քանակը</label>
+            <input type="text" name="tokens_count" placeholder="Բառանիշների քանակը" value="0">
+          </div>
+        </div>
+        <div class="three fields">
+          <div class="field">
+            <label>Հրապարակման ոլորտը</label>
+            <input type="text" name="sphere" placeholder="Հրապարակման ոլորտը">
+          </div>
+          <div class="field">
+            <label>Հրապարակման բնույթը</label>
+            <input type="text" name="press_type" placeholder="Հրապարակման բնույթը">
+          </div>
+          <div class="field">
+            <label>Հրապարակման հղումը</label>
+            <input type="text" name="link" placeholder="Հրապարակման հղումը">
+          </div>
+        </div>
+        <div class="two fields">
+          <div class="field">
+            <label>Լիցենզիա</label>
+            {{ press_form.license }}
+          </div>
+          <div class="field">
+            <label>Հաստատել</label>
+            <button onclick="core.biblg.create('press')" class="ui primary button form-button submit">Ավելացնել</button>
+            <div class="ui active inline loader hidden"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
