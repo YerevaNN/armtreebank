@@ -1,6 +1,6 @@
 import re
 
-class Punctuation:
+class Punct:
   
   LINEAR_PUNCTUATION = {
     '0l': ('՚','\u055A',''),
@@ -81,20 +81,21 @@ class Punctuation:
 class Tokenizer:
   
   SEGMENTATION_RULES = [
-    (1, u'([' + Punctuation([':', 'dot', '`', 3, 4]).regex() + ']\s*[Ա-ՖևA-ZА-ЯЁ]+)'), #: Ա
-    (2, u'([' + Punctuation([':', 'dot', '`', 3, 4]).regex() + ']\s*$)'), #:
-    (3, u'([' + Punctuation(':').regex() + ']\s+[0-9]{1})'), #: 2016
-    (4, u'([' + Punctuation.all() + ']\s*[' + Punctuation([5, 6]).regex() + ']+\s*[Ա-ֆևևA-zА-яЁё0-9]+)'), #, -
-    (5, u'([' + Punctuation.all() + ']\s*[' + Punctuation(1).regex() + ']{1}\s*[Ա-ֆևևA-zА-яЁё0-9]+)'), #. <<
+    (1, u'([' + Punct([':', 3, 4]).regex() + ']\s*[Ա-ՖևA-ZА-ЯЁ]+)'), #: Ա
+    (2, u'([' + Punct([':', 3, 4]).regex() + ']\s*$)'), #:
+    (3, u'([' + Punct(':').regex() + ']\s+[0-9]{1})'), #: 2016
+    #(4, u'([' + Punct.all() + ']\s*[' + Punct([5, 6]).regex() + ']+\s*[Ա-ֆևևA-zА-яЁё0-9]+)'), #, -
+    (5, u'([' + Punct.all() + ']\s*[' + Punct(1).regex() + ']{1}\s*[Ա-ֆևևA-zА-яЁё0-9]+)'), #. <<
     (6, u'\.{1}\n'),
     (6, u'\S{1}\n'),
   ]
   
   TOKENIZATION_RULES = [
-    (1, u'[' + Punctuation.inter() + ']'), # 5°С, $5, -5, +5
-    (2, Punctuation.metric(double=True)), # 5կմ/ժ, 5մ/վ
+    (1, u'[' + Punct.inter() + ']'), # 5°С, $5, -5, +5
+    (2, Punct.metric(double=True)), # 5կմ/ժ, 5մ/վ
     (3, u'[0-9]+-[ա-ֆԱ-Ֆևև]+'), #1-ին , 5-ական
     (4, u'թ[ա-ֆև]*\.*-[ա-ֆԱ-Ֆևև]+'), #1999թ.-ին
+    (19, u'թթ.-ին|թ.-ին'),
     (5, u'[0-9]+\s+[0-9]+'), #numbers 250 000
     (6, u'[0-9]+[\.|,|/]{1}[0-9]+'), #numbers 2.5 2,5 2/3
     (7, u'\.[0-9]+'), #numbers .5 , .08
@@ -104,18 +105,19 @@ class Tokenizer:
     (10, u'[Ա-Ֆև]+[ա-ֆև]+-[Ա-Ֆև]+[ա-ֆև]+'), #Սայաթ-Նովա
     (11, u'[Ա-Ֆև]+-[ա-ֆև]+'), #ՀՀԿ-ական ( լավ չի, բայց ուրիշ օրինակ մտքիս չեկավ )
     (12, u'(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?'), #URL
+    (20, u'[ա-ֆԱ-Ֆևև]+[' + Punct.all(linear=True) + ']{1,3}'), #հեյ~(հե~յ)
     (13, u'[ա-ֆԱ-Ֆևև]+'), #simple word
     (14, u'[a-zA-Z]+'), #english word 
     (15, u'[а-яА-ЯЁё]+'), #russian word
     (16, u'\.{3,4}'), #.... , ...
-    (17, u'([' + Punctuation.all() + ']{1})'), #all punctuations
-    (18, u'([' + Punctuation.all(linear=True) + ']{1})'), #all punctuations
+    (17, u'([' + Punct.all() + ']{1})'), #all punctuations
+    (18, u'([' + Punct.all(linear=True) + ']{1})'), #all linear punctuations
   ]
   
   SPECIAL_RULES = {
     'segment': [
-      ( '__all__', False, u'[' + Punctuation(1).regex() + ']\s*[ա-ֆևa-zа-яё]{1}[A-zА-яЁёԱ-ֆևև\s։]+[^' + Punctuation(2).regex() + ']$' ), #<<bla bla: bla>> is not a segment
-      ( [4], False, u'[0-9]{1}թ$' ), #1999թ.-ին is not a segment
+      ( '__all__', False, u'[' + Punct(1).regex() + ']\s*[ա-ֆևa-zа-яё]{1}[A-zА-яЁёԱ-ֆևև\s։]+[^' + Punct(2).regex() + ']$' ), #<<bla bla: bla>> is not a segment
+      #( [4], False, u'[0-9]{1}թ$' ), #1999թ.-ին is not a segment
     ],
     'token': [
       ( [4], True, u'[0-9]{1}$' ),
@@ -125,11 +127,19 @@ class Tokenizer:
   PURIFICATION_RULES = [
     ('<<', '«'),
     ('>>', '»'),
-    ('(?P<w_beg>[ա-ֆԱ-Ֆևև]+)(?P<symbol>[' + Punctuation.all(linear=True) + ']){1}(?P<w_end>[ա-ֆԱ-Ֆևև]*)', '\g<w_beg>\g<w_end>\g<symbol>'), #LINEAR_PUNCTUATION
-    ('(?P<day>[0-9]{1,4})(?P<symbol1>[' + Punctuation(['dot', 6, 16]).regex() + '])(?P<month>[0-9]{1,4})(?P<symbol2>[' + Punctuation(['dot', 6, 16]).regex() + '])(?P<year>[0-9]{1,4})',
+    ('(?P<w_beg>[ա-ֆԱ-Ֆևև]+)(?P<symbol>[' + Punct.all(linear=True) + ']){1}(?P<w_end>[ա-ֆԱ-Ֆևև]*)', '\g<w_beg>\g<w_end>\g<symbol>'), #LINEAR_PUNCTUATION
+    ('(?P<day>[0-9]{1,4})(?P<symbol1>[' + Punct(['dot', 6, 16]).regex() + '])(?P<month>[0-9]{1,4})(?P<symbol2>[' + Punct(['dot', 6, 16]).regex() + '])(?P<year>[0-9]{1,4})',
       '\g<day> \g<symbol1> \g<month> \g<symbol2> \g<year>'), #Ամսաթվեր 20.12.2015
   ]
   
+  MULTIWORD_TOKENS = [
+    {
+      'parent_rule': 20,
+      'regex': u'^[ա-ֆԱ-Ֆևև]+[' + Punct.all(linear=True) + ']{1,3}$',
+      'seperator': [ u'[ա-ֆԱ-Ֆևև]+', u'[' + Punct.all(linear=True) + ']{1}' ],
+    }, # հեյ~ => 1-2.հեյ~ 1.հեյ 2.~
+  ]
+    
   def __init__(self, text):
     self.text = text
     self.text_length = len(text)
@@ -173,7 +183,22 @@ class Tokenizer:
               return False
         return token
     return False
-
+  
+  @classmethod
+  def multitoken(cls, initial_token):
+    word = initial_token
+    for r in cls.MULTIWORD_TOKENS:
+      token = re.match(r['regex'], word)
+      if token:
+        multitoken = []
+        for s in r['seperator']:
+          split_part = re.match(s, word)
+          if split_part:
+            multitoken.append(split_part.group(0))
+            word = word[split_part.end():]
+        return multitoken
+    return False
+    
   def purification(self):
     for r in self.PURIFICATION_RULES:
       self.text = re.sub(r[0], r[1], self.text)
@@ -203,6 +228,7 @@ class Tokenizer:
   def tokenization(self):
     for s in self.segments:
       l = 0
+      index = 1
       
       while l < len(s['segment']):
         token = self.find_token(s['segment'], l)
@@ -210,8 +236,19 @@ class Tokenizer:
           l += token.end()
           new_token = token.group(0)
           clean_token = new_token.rstrip().lstrip()
-          s['tokens'].append((len(s['tokens'])+1, clean_token))
+          
+          multi = self.multitoken(clean_token)
+          if multi:
+            start_p = index
+            end_p = start_p + len(multi) - 1
+            s['tokens'].append( ('{s}-{e}'.format(s=start_p, e=end_p), clean_token) )
+            for t in multi:
+              s['tokens'].append( (index, t) )
+              index += 1
+          else:
+            s['tokens'].append(( index, clean_token ))
+            index += 1
+            
         else:
           l += 1
-          
     return self

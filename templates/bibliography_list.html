@@ -8,9 +8,55 @@
   <div class="ui container segment center-aligned">
     <div class="ui one column grid">
       <div class="column">
-        <div class="ui olive message">Բոլոր մատենագրությունները</div>
+        <h2 class="ui header center aligned blue page-header_">Բոլոր մատենագրությունները</h2>
+        <div class="column">
+          <div class="ui pagination menu">
+            {% if biblg_list.has_previous %}
+              <a class="ajax item" href="{% url 'list_view_bibliography' biblg_list.previous_page_number %}">Նախորդ էջ</a>
+            {% endif %}
+              <a class="item active">Էջ {{ biblg_list.number }} / {{ biblg_list.paginator.num_pages }}</a>
+            {% if biblg_list.has_next %}
+              <a class="ajax item" href="{% url 'list_view_bibliography' biblg_list.next_page_number %}">Հաջորդ էջ</a>
+            {% endif %}
+          </div>
+        </div>
         {% for biblg in biblg_list %}
-          <div class="ui stacked segment">{{biblg.name|truncatewords:30}}</div>
+          <div class="ui segments b{{biblg.id}}">
+            <div class="ui segment">
+              {% if biblg.tokenized == 'no' %}
+                <a class="ui blue ribbon label">Թոքենիզացված չէ</a>
+              {% elif biblg.tokenized == 'yes' %}
+                <a class="ui orange ribbon label">Թոքենիզացված է, Ստուգված չէ</a>
+              {% elif biblg.tokenized == 'validated' %}
+                <a class="ui green ribbon label">Ստուգված է</a>
+              {% endif %}
+              <a class="ui tag red label">Թագավորված չէ</a>
+              <p></p>
+              <p>{{biblg.name|truncatewords:30}}</p>
+              <div class="ui grid">
+                <div class="sixteen wide column">
+                  {% if biblg.tokenized == 'no' %}
+                    <a class="ui blue basic button" href="{% url 'tokenize_bibliography' biblg.id %}" onclick="core.toknz.biblg(event)">Թոքենիզացիա</a>
+                  {% elif biblg.tokenized == 'yes' %}
+                    <a class="ui blue basic button ajax" href="{% url 'biblg_tokens' biblg.id %}">Ստուգել</a>
+                  {% elif biblg.tokenized == 'validated' %}
+                    <a class="ui blue basic button ajax" href="{% url 'biblg_tokens' biblg.id %}">Դիտել</a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="ui {% if biblg.textbook %}tall{% endif %} stacked segment secondary blue">
+              {% if biblg.textbook %}
+                {% for b_t in biblg.textbook.texts.all %}
+                  <p>{{ forloop.counter }}. {{b_t.text|truncatewords:50}}...<p>
+                {% endfor %}
+              {% elif biblg.fiction %}
+                {{biblg.fiction.text.text|truncatewords:200}}
+              {% elif biblg.press %}
+                {{biblg.press.text.text|truncatewords:200}}
+              {% endif %}
+            </div>
+          </div>
         {% endfor %}
       </div>
       <div class="column">

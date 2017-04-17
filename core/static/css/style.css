@@ -7,6 +7,10 @@ body * {
   word-break: break-word;
 }
 
+.ui.header {
+  font-weight: 300!important;
+}
+
 .main-menu {
   margin: 0!important;
   border-radius: 0!important;
@@ -43,11 +47,13 @@ body * {
 }
 
 .tokenization .result .id {
-  color: #00B5AD;
   margin-right: 7px;
   font-size: 13px;
   font-family: 'Roboto';
 }
+
+.tokenization .result .id.blue { color: blue; }
+.tokenization .result .id.teal { color: #00B5AD; }
 
 .footer {
   margin: 0!important;
@@ -60,4 +66,9 @@ body * {
 
 ._loader {
   height: 100px!important;
+}
+
+.page-header_ {
+  padding: 20px!important;
+  font-weight: 200!important;
 }

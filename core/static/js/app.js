@@ -263,6 +263,19 @@
           $(event.target).closest('.tokens-parent').find('.tokens').eq(type).removeClass('hidden');
         }
       },
+      biblg: function(event){
+        var a = $(event.target).closest('a');
+        a.addClass('loading');
+        
+        $.post(a.attr('href'), function(data){
+          
+          a.removeClass('loading');
+          if( data.type == 'ok' ) window.location = '/tokenization/tokens/' + data.id + '/'
+          else alert(data.response);
+          
+        });
+        event.preventDefault();
+      }
     },
   };
   

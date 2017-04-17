@@ -17,7 +17,7 @@ class Author(models.Model):
   
   @staticmethod
   def valid_date(str):
-    if re.match(r'^[0-9]{2,4}[-|/][0-9]{2,4}[-|/][0-9]{2,4}$', str):
+    if re.match(r'^[0-9]{1,4}([-|/][0-9]{2,4})*([-|/][0-9]{2,4})*$', str):
       return str
     return ''
   
@@ -52,7 +52,7 @@ class Author(models.Model):
 class Text(models.Model):
   creation_date = models.DateTimeField(auto_now_add=True)
   update_date = models.DateTimeField(auto_now=True)
-  author = models.ManyToManyField(Author,blank=True,null=True)
+  author = models.ManyToManyField(Author,blank=True)
   text_name = models.CharField(max_length=400,blank=True,null=True)
   text = models.TextField()
   LANG_CHOICES = (
@@ -162,13 +162,23 @@ class Bibliography(models.Model):
     choices=LICENSE_CHOICES,
     default='public',
   )
+  TOKEN_CHOICES = (
+    ('no', 'Թոքենիզացված չէ'),
+    ('yes', 'Թոքենիզացված է'),
+    ('validated', 'Թոքենիզացված է, ստուգված է'),
+  )
+  tokenized = models.CharField(
+    max_length=20,
+    choices=TOKEN_CHOICES,
+    default='no',
+  )
   
   def __str__(self):
     return '{:.20}'.format(self.name)
   
   @staticmethod
   def valid_date(str):
-    if re.match(r'^[0-9]{2,4}[-|/][0-9]{2,4}[-|/][0-9]{2,4}$', str):
+    if re.match(r'^[0-9]{1,4}([-|/][0-9]{2,4})*([-|/][0-9]{2,4})*$', str):
       return str
     return ''
 
@@ -194,7 +204,7 @@ class Fiction(Bibliography):
   genre = models.CharField(max_length=100)
   text_creation_date = models.CharField(max_length=15)
   text_publication_date = models.CharField(max_length=15)
-  translation = models.ManyToManyField(Author)
+  translation = models.ManyToManyField(Author,blank=True)
   TRANS_CHOICES = (
     ('no', 'Դատարկ'),
     ('eng', 'Անգլերեն'),

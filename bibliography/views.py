@@ -13,7 +13,7 @@ import bibliography.forms as BiblForms
 class BibliographyListView(View):
   
   def get(self, request, page = 1):
-    biblg_list = Bibliography.objects.all()
+    biblg_list = Bibliography.objects.all().order_by('-update_date')
     paginator = Paginator(biblg_list, 10)
     
     try:
@@ -211,3 +211,4 @@ def author_save(request):
     'response': response['response'],
     'authors': Template('{{form.author}}').render(Context({'form': BiblForms.TextForm()})),
   })
+  

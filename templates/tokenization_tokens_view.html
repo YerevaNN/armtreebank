@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Թոքենիզացիա | ՀայՇտեմ{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="ui container segment center-aligned">
+    <div class="tokenization">  
+      <h2 class="ui header center aligned blue page-header_">Մատենագրություն #{{biblg.id}}</h2>
+      <h3 class="ui header center aligned blue">{{ biblg.name }}</h3>
+      <div class="ui segments">
+        {% for t in texts %}
+          <div class="ui segment">
+            <p><span>{{ forloop.counter }}.</span> {{t.text_name}}</p>
+            <p>{{t.text}}</p>
+          </div>
+        {% endfor %}
+      </div>
+      <br>
+      <h3 class="ui header center aligned blue">Թոքենիզացիա</h3>
+      <div class="result">
+        {{tokens}}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
