@@ -72,3 +72,11 @@ body * {
   padding: 20px!important;
   font-weight: 200!important;
 }
+.before-secondary_ {
+  padding: 20px 0 10px!important;
+  margin: 0!important;
+}
+
+.secondary-header_ {
+  margin: 0 0 10px!important;
+}

@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Կորպուս | ՀայՇտեմ{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="ui container segment center-aligned">
+    <div class="ui secondary pointing menu">
+      <a class="item ajax" href="{% url 'list_view_bibliography' 'fiction' 1 %}">Գեղարվեստական</a>
+      <a class="item ajax" href="{% url 'list_view_bibliography' 'press' 1 %}">Մամուլ</a>
+      <a class="item ajax" href="{% url 'list_view_bibliography' 'textbook' 1 %}">Դասագրքային օրինակներ</a>
+      <a class="item">Հեղինակների ցանկ</a>
+      {% if auth %}
+      <div class="right menu">
+        <a class="ui item" href="{% url 'create_bibliography' %}">
+          <button class="ui button">Ստեղծել նորը</button>
+        </a>
+      </div>
+      {% endif %}
+    </div>
+    <h2 class="ui header center aligned blue page-header_">Մատենագիտական ծանոթագրում</h2>
+    <p>Կորպուսը համալրված է տեքստերի մատենագիտական ծանոթագրման համակարգով, ինչը լրացուցիչ հնարավորություններ է ընձեռում լեզվական նյութի հետ աշխատանքում։ Մատենագիտական ծանոթագրման համակարգում առանցքային են տեքստի italicանվանմանը և italicհեղինակին առնչվող տվյալները։ Կառուցվում է italicտեքստի italicանձնագիր, բաղկացած հետևյալ բաղադրիչներից.</p>
+    <div class="ui segments">
+      <div class="ui blue segment">
+        <p>Հեղինակին առնչվող մատենագիտական տվյալները՝</p>
+        <dl class="ui list">
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հեղինակի ազգանունը, անունը, հայրանունը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հեղինակի ծննդյան տարեթիվը,              
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հեղինակի մահվան տարեթիվը։
+              </div>
+            </div>
+          </li>
+        </dl> 
+      </div>
+      <div class="ui blue segment">
+        <p>Դասագրքերին առնչվող մատենագիտական տվյալները՝</p>
+        <dl class="ui list">
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              դասագրքի անվանումը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              դասագրքի հեղինակի ազգանունը, անունը, հայրանունը,      
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              դասագրքի հեղինակի ծննդյան տարեթիվը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              դասագրքի հեղինակի մահվան տարեթիվը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              ոլորտը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              ստեղծման տարեթիվը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հրատարակման տարեթիվը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              բառանիշների/նախադասությունների քանակը։
+              </div>
+            </div>
+          </li>
+        </dl> 
+      </div>
+      <div class="ui blue segment">
+        <p>Գեղարվեստական գրականությանը (գրավոր խոսքին, բացառությամբ մամուլ) առնչվող մատենագիտական տվյալները՝</p>
+        <dl class="ui list">
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              գրքի/տեքստի անվանումը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              տեսակը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              ժանրը (ժանրերը),
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              ստեղծման տարեթիվը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հրատարակման տարեթիվը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              թարգմանություն (բնագրից/միջնորդավորված, բնագրի/միջնորդ լեզուն),
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              բառանիշների/նախադասությունների քանակը։
+              </div>
+            </div>
+          </li>
+        </dl> 
+      </div>
+      <div class="ui blue segment">
+        <p>Մամուլին առնչվող մատենագիտական տվյալները՝</p>
+        <dl class="ui list">
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              պարբերականի անվանումը,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հրատարակման տարեթիվը, համարը, հղումը,,
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հրապարակման բնույթը (հնարավոր է մի քանիսը՝ հարցազրույց, վերլուծություն և այլն),
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              հրապարակման ոլորտը (հնարավոր է մի քանիսը՝ քաղաքականություն, տնտեսություն, բանակ և այլն),
+              </div>
+            </div>
+          </li>
+          <li class="item">
+            <i class="right triangle icon"></i>
+            <div class="content">
+              <div class="description">
+              բառանիշների/նախադասությունների քանակը։
+              </div>
+            </div>
+          </li>
+        </dl> 
+      </div>
+    </div>
+    <p>Մատենագիտական անձնագրում նշում կա տեքստի հեղինակային իրավունքների մասին։</p>
+  </div>
+</div>
+{% endblock %}

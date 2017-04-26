@@ -86,7 +86,11 @@ def tokenize_bibliography(request, biblg_id):
   if request.method != 'POST':
     response['response'] = 'Օգտագործեք \'post\' մեթոդը'
     return JsonResponse(response)
-    
+  
+  if not request.user.is_authenticated or not request.user.is_active:
+    response['response'] = 'Գրանցված չեք'
+    return JsonResponse(response)
+  
   try:
     biblg = Bibliography.objects.get(id=biblg_id)
   except Exception:

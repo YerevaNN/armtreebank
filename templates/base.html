@@ -16,7 +16,7 @@
 	<!-- Sources -->
 	<script src="/core{% static 'js/app.js' %}" type="text/javascript"></script>
 	<link rel="stylesheet" href="/core{% static 'css/style.css' %}" type="text/css">
-  {% block sources %}{% endblock %}
+  <link rel="stylesheet" href="/core{% static 'css/home.css' %}" type="text/css">
 </head>
 <body>
 	<div class="modals">
@@ -35,25 +35,15 @@
     <div class="ui center-aligned container">
       <div class="ui grid">
         <div class="row">
-          <div class="eight wide column">
-            <p>«ՀայՇտեմ»֊ը արդի արևելահայերենի մասնագիտացված լեզվաբանական կորպուս է, ուղղված մեքենայական ուսուցմամբ ձևաբանական և շարահյուսական վերլուծիչ, ինչպես նաև իմաստաբանաան բաղադրիչ պարունակող շարահյուսական ծառերի շտեմարան ստեղծելու նպատակին։ </p>
+          <div class="eleven wide column">© {% now 'Y' %} ՀայՇտեմ</div>
+          <div class="five wide column right floated">
+            <p>
+              ԵՊՀ, 7-րդ մասնաշենք, լս. 330
+              <br>
+              Ալեք Մանուկյան 1, 0025, Երևան
+            </p>
+            <p>Հեռ. +374 (0) 60 710 583</p>
           </div>
-          <div class="four wide column right floated">
-            <div class="ui vertical menu right">
-              <div class="item">
-                <div class="header">Լրացուցիչ</div>
-                <div class="menu">
-                  <a class="item">Հետադարձ Կապ</a>
-                  <a class="item">Օգտագործման Կանոններ</a>
-                <div class="item">Հաճախ տրվող հարցեր</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="eight wide column">© {% now 'Y' %} ՀայՇտեմ</div>
-          <div class="four wide column right floated">Երևան, Ալեք Մանուկյան 1</div>
         </div>
       </div>
     </div>

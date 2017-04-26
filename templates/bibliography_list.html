@@ -1,22 +1,41 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Մատենագրություններ | ՀայՇտեմ{% endblock %}
+{% block title %}Կորպուս | ՀայՇտեմ{% endblock %}
 
 {% block content %}
 <div class="main-content">
   <div class="ui container segment center-aligned">
+      <div class="ui secondary pointing menu">
+      <a class="item ajax" href="{% url 'list_view_bibliography' 'fiction' 1 %}">Գեղարվեստական</a>
+      <a class="item ajax" href="{% url 'list_view_bibliography' 'press' 1 %}">Մամուլ</a>
+      <a class="item ajax" href="{% url 'list_view_bibliography' 'textbook' 1 %}">Դասագրքային օրինակներ</a>
+      <a class="item">Հեղինակների ցանկ</a>
+      {% if auth %}
+      <div class="right menu">
+        <a class="ui item" href="{% url 'create_bibliography' %}">
+          <button class="ui button">Ստեղծել նորը</button>
+        </a>
+      </div>
+      {% endif %}
+    </div>
     <div class="ui one column grid">
       <div class="column">
-        <h2 class="ui header center aligned blue page-header_">Բոլոր մատենագրությունները</h2>
+        <h2 class="ui header center aligned blue page-header_ before-secondary_">Բոլոր տեքստերը</h2>
+        <h4 class="ui header center aligned grey secondary-header_">
+        {% if type == 'textbook' %}Դասագրքային օրինակներ
+        {% elif type == 'fiction' %}Գեղարվեստական
+        {% elif type == 'press' %}Մամուլ
+        {% endif %}
+        </h4>
         <div class="column">
           <div class="ui pagination menu">
             {% if biblg_list.has_previous %}
-              <a class="ajax item" href="{% url 'list_view_bibliography' biblg_list.previous_page_number %}">Նախորդ էջ</a>
+              <a class="ajax item" href="{% url 'list_view_bibliography' type biblg_list.previous_page_number %}">Նախորդ էջ</a>
             {% endif %}
               <a class="item active">Էջ {{ biblg_list.number }} / {{ biblg_list.paginator.num_pages }}</a>
             {% if biblg_list.has_next %}
-              <a class="ajax item" href="{% url 'list_view_bibliography' biblg_list.next_page_number %}">Հաջորդ էջ</a>
+              <a class="ajax item" href="{% url 'list_view_bibliography' type biblg_list.next_page_number %}">Հաջորդ էջ</a>
             {% endif %}
           </div>
         </div>
@@ -33,6 +52,7 @@
               <a class="ui tag red label">Թագավորված չէ</a>
               <p></p>
               <p>{{biblg.name|truncatewords:30}}</p>
+              {% if request.user.is_authenticated %}
               <div class="ui grid">
                 <div class="sixteen wide column">
                   {% if biblg.tokenized == 'no' %}
@@ -44,6 +64,7 @@
                   {% endif %}
                 </div>
               </div>
+              {% endif %}
             </div>
             <div class="ui {% if biblg.textbook %}tall{% endif %} stacked segment secondary blue">
               {% if biblg.textbook %}
@@ -57,16 +78,18 @@
               {% endif %}
             </div>
           </div>
+        {% empty %}
+          <h3 class="ui header grey">Տեքստեր չկան</h3>
         {% endfor %}
       </div>
       <div class="column">
         <div class="ui pagination menu">
           {% if biblg_list.has_previous  %}
-            <a class="ajax item" href="{% url 'list_view_bibliography' biblg_list.previous_page_number %}">Նախորդ էջ</a>
+            <a class="ajax item" href="{% url 'list_view_bibliography' type biblg_list.previous_page_number %}">Նախորդ էջ</a>
           {% endif %}
             <a class="item active">Էջ {{ biblg_list.number }} / {{ biblg_list.paginator.num_pages }}</a>
           {% if biblg_list.has_next %}
-            <a class="ajax item" href="{% url 'list_view_bibliography' biblg_list.next_page_number %}">Հաջորդ էջ</a>
+            <a class="ajax item" href="{% url 'list_view_bibliography' type biblg_list.next_page_number %}">Հաջորդ էջ</a>
           {% endif %}
         </div>
       </div>

@@ -10,10 +10,23 @@ from core.functions import base_context
 from user.models import UserProfile
 import bibliography.forms as BiblForms
 
-class BibliographyListView(View):
+class BibliographyView(View):
   
   def get(self, request, page = 1):
-    biblg_list = Bibliography.objects.all().order_by('-update_date')
+    context = base_context(request)
+    
+    return render(request, 'bibliography.html', context)
+    
+class BibliographyListView(View):
+  
+  def get(self, request, type = 'textbook', page = 1 ):
+    if type == 'textbook':
+      biblg_list = Textbook.objects.all().order_by('-update_date')
+    elif type == 'fiction':
+      biblg_list = Fiction.objects.all().order_by('-update_date')
+    elif type == 'press':
+      biblg_list = Press.objects.all().order_by('-update_date')
+      
     paginator = Paginator(biblg_list, 10)
     
     try:
@@ -25,6 +38,7 @@ class BibliographyListView(View):
     
     context = base_context(request)
     context['biblg_list'] = biblgs
+    context['type'] = type
     
     return render(request, 'bibliography_list.html', context)
 

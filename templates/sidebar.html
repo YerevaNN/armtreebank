@@ -1,20 +1,10 @@
 {% load static %}
 <a class="ajax item" href="{% url 'home' %}">ՀայՇտեմ</a>
 <div class="right menu">
-  <a class="ajax item" href="{% url 'about' %}">Բնութագիր</a>
-  <a class="ajax item" href="{% url 'process' %}">Թոքենիզացիա</a>
-  <div class="ui pointing dropdown item">
-    Մատենագրություն
-    <i class="dropdown icon"></i>
-    <div class="menu">
-      <a class="ajax item" href="{% url 'list_view_bibliography' 1 %}">Դիտել մատենագրությունները</a>
-      {% if auth %}
-      <a class="ajax item" href="{% url 'create_bibliography' %}">Ստեղծել նորը</a>
-      {% else %}
-      <a class="item disabled">Ստեղծել նորը(Մուտք գործեք)</a>
-      {% endif %}
-    </div>
-  </div>
+  <a class="ajax item" href="{% url 'about' %}">Նախագիծը</a>
+  <a class="ajax item" href="{% url 'process' %}">ՀայՆիշ</a>
+  <a class="ajax item" href="{% url 'bibliography' %}">Կորպուս</a>
+
   {% if auth %}
   <a class="item">{{ user.user.first_name }}</a>
   <div class="item">
