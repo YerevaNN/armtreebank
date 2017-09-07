@@ -33,3 +33,20 @@
   color: #eee;
   text-align: center;
 }
+
+.home .header_  .text a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.home  .team-member {
+  margin-bottom: 5px;
+}
+
+.home  ._body {
+  margin: 40px 0;
+}
+
+.home  ._body .supporters {
+  justify-content: center;
+}

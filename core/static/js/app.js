@@ -238,6 +238,19 @@
           }).submit();
           
         }
+      },
+      sentence: function(biblg, sentence, pos){
+        $.post('/tokenization/tokens/' + biblg + '/sentence/' + sentence + '/', {}, function(data){
+          if(data['type'] == 'ok') {
+            var html = $(data['res']);
+            var width = 100 / html.find('.token_item').length;
+            html.find('.tokens').css( 'width', ( html.find('.token_item').length * 100 ) + '%');
+            html.find('.tokens').data('width', width).data('pos', 0).data('len', html.find('.token_item').length);
+            if( pos ) html.find('.tokens').css('margin-left', pos['margin']).data('pos', pos['pos']);
+            html.find('.token_item').outerWidth( width + '%');
+            $('.tokenization .result').html(html);
+          }
+        });
       }
     },
     toknz: {
@@ -277,14 +290,149 @@
         event.preventDefault();
       }
     },
+    tag: {
+      biblg: function(event){
+        var a = $(event.target).closest('a');
+        a.addClass('loading');
+        
+        $.post(a.attr('href'), function(data){
+          
+          a.removeClass('loading');
+          if( data.type == 'ok' ) window.location = '/tokenization/tokens/' + data.id + '/'
+          else alert(data.response);
+          
+        });
+        event.preventDefault();
+      }
+    },
+    t_ui: {
+      prevSentence: function(){
+        var sentence = $('.tokenization .result .sentence').data('sentence'),
+            biblgID = $('.tokenization').data('biblg');
+        
+        if(!sentence) sentence = 2;
+        
+        core.biblg.sentence(biblgID, sentence - 1);
+      },
+      nextSentence: function(){
+        var sentence = $('.tokenization .result .sentence').data('sentence'),
+            biblgID = $('.tokenization').data('biblg');
+        
+        if(!sentence) sentence = 0;
+        
+        core.biblg.sentence(biblgID, sentence + 1);
+      },
+      submitWord: function(event, pos){
+        var token = $(event.target).closest('.token_item').data('token'),
+            sentence = $(event.target).closest('.sentence').data('sentence'),
+            biblg = $(event.target).closest('.sentence').data('biblg');
+        
+        $(event.target).addClass('loading');
+        
+        $.post('/tokenization/token/submit/' + pos + '/', {'token': token, 'sentence': sentence, 'biblg': biblg}, function(data){
+          $(event.target).removeClass('loading');
+          if(data['type'] == 'ok') {
+            if( data['act'] == 'drop' ) $(event.target).removeClass('green');
+            else {
+              $(event.target).closest('.token_item').find('.ui.button').removeClass('green');
+              $(event.target).addClass('green');
+            }
+          }
+          else $(event.target).addClass('red');
+        });
+      },
+      checkWord: function(){
+        $('.ui.modal#check-word').modal('show');
+      },
+      newWord: function(){
+        $('.modal#new-word .button').removeClass('red').removeClass('green');
+        $('.modal#new-word .form').trigger('reset');
+        $('.ui.modal#new-word').modal('show');
+      },
+      prevWord: function(){
+        if( $('.tokens').data('pos') == 0 ) var pos = -( $('.tokens').data('len') - 1 ) * 100 ;
+        else var pos = $('.tokens').data('pos') + 100;
+        $('.tokens').css('margin-left', pos + '%').data('pos', pos);
+      },
+      nextWord: function(){
+        if( $('.tokens').data('pos') == -( $('.tokens').data('len') - 1 ) * 100 ) var pos = 0 ;
+        else var pos = $('.tokens').data('pos') - 100;
+        $('.tokens').css('margin-left', pos + '%').data('pos', pos);
+      },
+      openFields: function(pos){
+        $('.modal#new-word .extra.field').removeClass('hidden');
+        $('.modal#new-word .extra.field .pos').addClass('hidden');
+        $('.modal#new-word .extra.field .pos.' + pos).removeClass('hidden');
+        $('.modal#new-word').modal('refresh');
+      },
+      wordOverview: function(){
+         var form = $('.modal#new-word .form');
+    
+        form.ajaxSubmit({
+          url: '/tokenization/word/overview/',
+          success: function( data ) {
+            if( data['type'] == 'ok' ) {
+              $('.modal#new-word .overview').html( data['output'] );
+            }
+          }
+        });
+      },
+    },
   };
   
-  setInterval(core.init, 200);
-  setInterval(core.semanticPlugin.init, 200);
+  function saveNewWord() {
+    $('.modal#new-word .button').addClass('loading');
+
+    var form = $('.modal#new-word .form');
+    
+    form.ajaxForm({
+      success: function( data ) {
+        $('.modal#new-word .button').removeClass('loading');
+        if( data['type'] == 'ok' ) {
+          $('.modal#new-word .button').addClass('green');
+          tagCurrSentence();
+          setTimeout(function(){ $('.modal#new-word').modal('hide') }, 500);
+        } else $('.modal#new-word .button').addClass('red');
+      }
+    }).submit();
+  }
   
+  function tagCurrSentence(){
+    var sentence = $('.tokenization .result .sentence').data('sentence'),
+        biblgID = $('.tokenization').data('biblg');
+    
+    var pos = {
+      'margin': $('.tokenization .tokens-block .tokens').css('margin-left'),
+      'pos': $('.tokenization .tokens-block .tokens').data('pos')
+    };
+    core.biblg.sentence(biblgID, sentence, pos);
+  }
+  
+  function getCookie(c_name) {
+    if (document.cookie.length > 0) {
+      c_start = document.cookie.indexOf(c_name + "=");
+      if (c_start != -1) {
+        c_start = c_start + c_name.length + 1;
+        c_end = document.cookie.indexOf(";", c_start);
+        if (c_end == -1) c_end = document.cookie.length;
+        return unescape(document.cookie.substring(c_start,c_end));
+      }
+    }
+    return '';
+  }
+  
+  $(function () {
+    $.ajaxSetup({
+      headers: { "X-CSRFToken": getCookie("csrftoken") }
+    });
+  });
+ 
 	$(window).bind("popstate", function( event ) {
 		
 		core.ajax.query(window.location.pathname);
 		
 	});
+  
+  setInterval(core.init, 200);
+  setInterval(core.semanticPlugin.init, 200);
   

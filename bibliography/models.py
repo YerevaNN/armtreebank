@@ -172,6 +172,16 @@ class Bibliography(models.Model):
     choices=TOKEN_CHOICES,
     default='no',
   )
+  TAG_CHOICES = (
+    ('no', 'Թագավորված չէ'),
+    ('yes', 'Թագավորված է'),
+    ('validated', 'Թագավորված է, ստուգված է'),
+  )
+  tagged = models.CharField(
+    max_length=20,
+    choices=TAG_CHOICES,
+    default='no',
+  )
   
   def __str__(self):
     return '{:.20}'.format(self.name)

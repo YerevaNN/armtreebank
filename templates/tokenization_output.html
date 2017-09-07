@@ -1,28 +1,44 @@
 {% for s in segments %}
   <div class="ui segments">
     <div class="ui segment"><span class="id {{color}}">{{s.id}}.</span>{{s.segment}}</div>
+    <div class="ui segment">
+    {{ s.st.tags }}-{{ s.st.checked_tags }}/{{ s.st.tokens }}
+    </div>
     <div class="ui segment {{color}} secondary tokens-parent">
       <div class="ui floating labeled icon dropdown button">
         <i class="dropdown icon"></i>
-        <span class="text">Հորիզոնական</span>
+        <span class="text">Ուղղահայաց</span>
         <div class="menu">
-          <div class="item active selected" onclick="core.toknz.process.orientation(event, 0)">Հորիզոնական</div>
-          <div class="item" onclick="core.toknz.process.orientation(event, 1)">Ուղղահայաց</div>
+          <div class="item" onclick="core.toknz.process.orientation(event, 0)">Հորիզոնական</div>
+          <div class="item active selected" onclick="core.toknz.process.orientation(event, 1)">Ուղղահայաց</div>
         </div>
       </div>
-      <div class="ui steps tokens">
+      <div class="ui steps tokens hidden">
       {% for t in s.tokens %}
         <div class="step">
           <div class="content">
-            <div class="title"><span class="id {{color}}">{{t.0}}</span>{{t.1}}</div>
+            <div class="title">
+              <span class="id {{color}}">{{t.0}}</span>
+              <span>{{t.1}}</span>
+            </div>
           </div>
         </div>
       {% endfor %}
       </div>
-      <div class="ui segments tokens hidden">
+      <div class="ui segments tokens">
       {% for t in s.tokens %}
         <div class="ui segment">
-          <p><span class="id {{color}}">{{t.0}}</span>{{t.1}}</p>
+          <p>
+            <span class="id {{color}}">{{t.0}}</span>
+            <span>{{t.1}}</span>
+            {% if t.2.tag %}
+              {% for tag in t.3 %}
+                <span>{ {{ tag.0 }}, {% if tag.1.parent.lemma %}{{ tag.1.parent.lemma }}{% else %}{{ tag.1 }}{% endif %} }</span>
+              {% endfor %}
+            {% else %}
+              <span>{ Not defined }</span>
+            {% endif %}
+          </p>
         </div>
       {% endfor %}
     </div>

@@ -7,6 +7,12 @@ body * {
   word-break: break-word;
 }
 
+.clearfix:after {
+  content: '';
+  clear: both;
+  display: table;
+}
+
 .ui.header {
   font-weight: 300!important;
 }
@@ -79,4 +85,21 @@ body * {
 
 .secondary-header_ {
   margin: 0 0 10px!important;
+}
+
+.tokens-block {
+  overflow: hidden;
+}
+
+.tokens {
+  margin: 10px 0;
+  transition: all 0.3s ease;
+}
+
+.token_item {
+  padding: 10px;
+  float: left;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 2px;
 }

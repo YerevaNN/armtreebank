@@ -6,9 +6,10 @@
 {% block content %}
 <div class="main-content">
   <div class="ui container segment center-aligned">
-    <div class="tokenization">  
+    <div class="tokenization" data-biblg="{{ biblg.id }}">  
       <h2 class="ui header center aligned blue page-header_">Մատենագրություն #{{biblg.id}}</h2>
       <h3 class="ui header center aligned blue">{{ biblg.name }}</h3>
+      <h3 class="ui header center aligned blue">{{ st.tags }}-{{ st.checked_tags }}/{{ st.tokens }}</h3>
       <div class="ui segments">
         {% for t in texts %}
           <div class="ui segment">
@@ -19,10 +20,17 @@
       </div>
       <br>
       <h3 class="ui header center aligned blue">Թոքենիզացիա</h3>
-      <div class="result">
-        {{tokens}}
+      <div class="ui grid stackable center aligned">
+        <div class="three wide column">
+          <div class="ui button"  onclick="core.t_ui.prevSentence()">Նախորդը</div>
+        </div>
+        <div class="ten wide column result left aligned"><div class="ui message">Խնդրում ենք սպասել..</div></div>
+        <div class="three wide column">
+          <div class="ui button" onclick="core.t_ui.nextSentence()">Հաջորդը</div>
+        </div>
       </div>
     </div>
   </div>
+  <script type="text/javascript">setTimeout(function(){core.biblg.sentence({{ biblg.id }}, 1);},1000);</script>
 </div>
 {% endblock %}

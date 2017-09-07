@@ -1,0 +1,53 @@
+{% if segment %}
+<div class="ui segments sentence" data-biblg="{{ biblg.id }}" data-sentence="{{ segment.position }}">
+  <div class="ui segment"><span class="id {{color}}">{{segment.position}}.</span>{{segment.segment}}</div>
+  <div class="ui segment">
+  {{ segment.st.tags }}-{{ segment.st.checked_tags }}/{{ segment.st.tokens }}
+  </div>
+  <div class="ui segment {{color}} secondary tokens-parent">
+    <div class="tokens-block">
+      <div class="tokens clearfix">
+      {% for t in segment.tokens %}
+        <div class="token_item" data-token="{{ t.0 }}">
+          <p>
+            <span class="id {{color}}">{{t.0}}</span>
+            <span>{{t.1}}</span>
+          </p>
+          <p>
+          {% if t.2.tag.all %}
+            {% for tag in t.3 %}
+              <button class="ui button {% if t.2.checked and tag.1.parent == t.2.selected_tag %}green{% endif %}" onclick="core.t_ui.submitWord(event, {{ forloop.counter0 }})">
+              {% if tag.0 == 'noun' %}
+                { {{ tag.0 }}, {% if tag.1.parent.lemma %}{{ tag.1.parent.lemma }}{% else %}{{ tag.1 }}{% endif %}-{{ tag.1.declension_type }}-{{ tag.1.quantity_type }} }
+                { {{ tag.1.declension }}, {{ tag.1.quantity }}{% if tag.1.form %},{{ tag.1.form }}{% endif %} }
+                |{% if tag.1.animate %}a=on|{% endif %}{% if tag.1.plural_only %}pl=on|{% endif %}{% if tag.1.uncountable %}unc=on|{% endif %}
+              {% elif tag.0 == 'verb' %}
+                { {{ tag.0 }}, {% if tag.1.parent.lemma %}{{ tag.1.parent.lemma }}{% else %}{{ tag.1 }}{% endif %}-{{ tag.1.ending }} }
+                { {% if tag.1.demq %}Դեմք: {{ tag.1.demq }}, {% endif %}{{ tag.1.type }}, {{ tag.1.form }} }
+              {% endif %}
+              </button>
+            {% endfor %}
+          {% else %}
+            <button class="ui button disabled">Not defined</button>
+          {% endif %}
+          </p>
+          {% if auth %}
+          <p>
+            <button class="ui button" onclick="core.t_ui.newWord(event)">Ավելացնել</button>
+          </p>
+          {% endif %}
+        </div>
+      {% endfor %}
+      </div>
+      <div class="tinder-buttons">
+        <div class="ui button" onclick="core.t_ui.prevWord(event)"><</div>
+        <div class="ui button" onclick="core.t_ui.nextWord(event)">></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="ui success message">
+  <div>Վերջ</div>
+</div>
+{% endif %}

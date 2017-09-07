@@ -27,8 +27,7 @@ class Dictionary:
     for unit in itemlist:
       text_elem = unit.getElementsByTagName('p')[0]
       text = text_elem.childNodes[0].nodeValue
-      match = re.match(text, sentence)
-      if match:
+      if sentence.startswith(text):
         return {
           'word': text,
           'exist': True,
@@ -267,6 +266,7 @@ class Tokenizer:
         l += punct_len
       else:
         l += 1
+    sorted(self.segments, key=lambda k: k['id']) 
     return self
 
   def tokenization(self):
