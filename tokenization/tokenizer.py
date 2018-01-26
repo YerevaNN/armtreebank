@@ -3,6 +3,8 @@ import os
 import re
 from xml.dom import minidom
 
+from tokenization.models import Word
+
 class Dictionary:
   PATH = os.path.dirname(__file__) + '/../dictionaries'
   
@@ -71,7 +73,7 @@ class Punct:
     16: ('\/','',''),
   }
     
-  INTERNATIONAL = [ '+', '-', '%', '°С', '$', '€', '₩', '¥', '₦', '₽', '£' ]
+  INTERNATIONAL = [ '/-', '\+', '@', '%', '°С', '\$', '€', '₩', '¥', '₦', '₽', '£', '\?', '!' , '~' ]
   METRIC = [ 'կմ', 'մ', 'ժ', 'վ', 'ր', 'կգ', 'գ', 'տ' ]
     
   def __init__(self, punct):
@@ -125,28 +127,32 @@ class Tokenizer:
     (23, u'(' + Punct(3).regex() + ')\s*$', 3), #...
     (3, u'[' + Punct(':').regex() + ']\s+[0-9]{1}', 1), #: 2016
     #(4, u'([' + Punct.all() + ']\s*[' + Punct([5, 6]).regex() + ']+\s*[Ա-ֆևևA-zА-яЁё0-9]+)'), #, -
-    (5, u'[' + Punct.all() + ']\s*[' + Punct(1).regex() + ']{1}\s*[Ա-ֆևևA-zА-яЁё0-9]+', 1), #. <<
-    (6, u'\.{1}\n', 1),
+    (5, u'[' + Punct.all() + ']\s*[' + Punct(1).regex() + ']{1}\s*[Ա-ֆևA-zА-яЁё0-9]+', 1), #. <<
+    (6, u'.{1}\n', 1),
   ]
   
   TOKENIZATION_RULES = [
-    (1, u'[' + Punct.inter() + ']'), # 5°С, $5, -5, +5
     (2, Punct.metric(double=True)), # 5կմ/ժ, 5մ/վ
-    (3, u'[0-9]+-[ա-ֆԱ-Ֆևև]+'), #1-ին , 5-ական
+    (3, u'[0-9]+-[ա-ֆԱ-Ֆև]+'), #1-ին , 5-ական
     #(4, u'թ[ա-ֆև]*\.*-[ա-ֆԱ-Ֆևև]+'), #1999թ.-ին
     #(19, u'թթ.-ին|թ.-ին'),
     #(5, u'[0-9]+\s+[0-9]+'), #numbers 250 000
-    (6, u'[0-9]+[\.|,|/]{1}[0-9]+'), #numbers 2.5 2,5 2/3
-    (7, u'\.[0-9]+'), #numbers .5 , .08
-    (7.1, u'[0-9]+'), #numbers 25
+    #(6, u''),
+    #(6.1, u'[0-9]+[\.|,|/]{1}[0-9]+'), #numbers 2.5 2,5 2/3
+    #(7, u'['+ Punct.inter() +']*[+|\-]?[\.|,]?[0-9]+[\.|,]?[0-9]+['+ Punct.inter() +']*'), #numbers 25
+    (7.1, u'([0-9]+[\/|' + Punct('dot').regex() + '|' + Punct(6).regex() + '|,]+)([0-9]+[\/|' + Punct('dot').regex() + '|' + Punct(6).regex() + '|,]?)([0-9]+[\/|' + Punct('dot').regex() + '|' + Punct(6).regex() + '|,]?)[0-9]*'), #complex nums
+    (7.2, u'[0-9]+[\.|,|\:]?[0-9]+'), #float numbers 1.01
+    (7.3, u'[\.|,]?[0-9]+'), #numbers 25, .36
     (8, u'([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)'), #E-mail
-    (9, u'@[a-z0-9_-]{3,}'), #nickname @gor_ar
+    (9, u'@[A-Za-z0-9_-]{2,}'), #nickname @gor_ar
     (10, u'[Ա-Ֆև]+[ա-ֆև]+-[Ա-Ֆև]+[ա-ֆև]+'), #Սայաթ-Նովա
     (11, u'[Ա-Ֆևа-яА-ЯЁёA-z]+-[ա-ֆև]+'), #ՀՀԿ-ական ( լավ չի, բայց ուրիշ օրինակ մտքիս չեկավ )
     (12, u'(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?'), #URL
-    (20, u'[ա-ֆԱ-Ֆևև]+[' + Punct.all(linear=True) + ']{1,3}'), #հեյ~(հե~յ)
-    (13, u'[ա-ֆԱ-Ֆևև]+'), #simple word
-    (14, u'[a-zA-Z]+'), #english word 
+    (20, u'[ա-ֆԱ-Ֆև]+[' + Punct.all(linear=True) + ']{1,3}'), #հեյ~(հե~յ)
+    #(21, u'[Ա-Ֆևа-яА-ЯЁёA-z]+.*[Ա-Ֆևа-яА-ЯЁёA-z]+'), #ՏՈՒ-154Մ
+    (1, Punct.inter()), # 5°С, $5, -5, +5, 25%
+    (13, u'[ա-ֆԱ-ֆև]+'), #simple word
+    (14, u'[a-zA-Z]+'), #english word
     (15, u'[а-яА-ЯЁё]+'), #russian word
     (16, u'\.{3,4}'), #.... , ...
     (17, u'([' + Punct.all() + ']{1})'), #all punctuations
@@ -167,8 +173,8 @@ class Tokenizer:
     ('<<', '«'),
     ('>>', '»'),
     ('(?P<w_beg>[ա-ֆԱ-Ֆևև]+)(?P<symbol>[' + Punct.all(linear=True) + ']){1}(?P<w_end>[ա-ֆԱ-Ֆևև]*)', '\g<w_beg>\g<w_end>\g<symbol>'), #LINEAR_PUNCTUATION
-    ('(?P<day>[0-9]{1,4})(?P<symbol1>[' + Punct(['dot', 6, 16]).regex() + '])(?P<month>[0-9]{1,4})(?P<symbol2>[' + Punct(['dot', 6, 16]).regex() + '])(?P<year>[0-9]{1,4})',
-      '\g<day> \g<symbol1> \g<month> \g<symbol2> \g<year>'), #Ամսաթվեր 20.12.2015
+    #('(?P<day>[0-9]{1,4})(?P<symbol1>[' + Punct(['dot', 6, 16]).regex() + '])(?P<month>[0-9]{1,4})(?P<symbol2>[' + Punct(['dot', 6, 16]).regex() + '])(?P<year>[0-9]{1,4})',
+    #  '\g<day> \g<symbol1> \g<month> \g<symbol2> \g<year>'), #Ամսաթվեր 20.12.2015
   ]
   
   MULTIWORD_TOKENS = [
@@ -199,7 +205,7 @@ class Tokenizer:
     
   def output(self):
     return self.segments
-  
+
   @classmethod
   def is_segment(cls, text, pointer):
     for index, r, len in cls.SEGMENTATION_RULES:
@@ -226,6 +232,14 @@ class Tokenizer:
   @classmethod
   def multitoken(cls, initial_token):
     word = initial_token
+    # գրքերս, ուսանողներս ...
+    '''
+    if any(map(lambda x: x == word[-1], list('սդ'))):
+      wrd = Word.objects.filter(word=word[:-1])
+      for w in wrd:
+        if w and w.pos == 'noun':
+          return [word[:-1] , word[-1]]'''
+    #searching in multitoken rules
     for r in cls.MULTIWORD_TOKENS:
       token = re.match(r['regex'], word)
       if token:
@@ -247,25 +261,37 @@ class Tokenizer:
     
   def segmentation(self):
     self.purification()
-    checkpoint = 0
-    l = 0
-    
-    while(l < self.text_length):
-      seg = self.is_segment(self.text[checkpoint:], l-checkpoint)
-      if seg:
-        punct_len = seg[-1]
-        new_segment = self.text[checkpoint:(l + punct_len)]
-        clean_segment = new_segment.rstrip().lstrip()
+
+    if self.text[:2] == 'NN':
+      text = self.text[2:].split('||')
+      for s in text:
         self.segments.append({
-          'segment': clean_segment,
-          'id': len(self.segments)+1,
-          'tokens': []
-        })
-        
-        checkpoint = l + punct_len
-        l += punct_len
-      else:
-        l += 1
+            'segment': s.rstrip().lstrip(),
+            'id': len(self.segments)+1,
+            'tokens': []
+          })
+
+    else:
+      checkpoint = 0
+      l = 0
+      
+      while(l < self.text_length):
+        seg = self.is_segment(self.text[checkpoint:], l-checkpoint)
+        if seg:
+          punct_len = seg[-1]
+          new_segment = self.text[checkpoint:(l + punct_len)]
+          clean_segment = new_segment.rstrip().lstrip()
+          self.segments.append({
+            'segment': clean_segment,
+            'id': len(self.segments)+1,
+            'tokens': []
+          })
+          
+          checkpoint = l + punct_len
+          l += punct_len
+        else:
+          l += 1
+
     sorted(self.segments, key=lambda k: k['id']) 
     return self
 

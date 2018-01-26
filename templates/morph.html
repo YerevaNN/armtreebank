@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}ՀայԲառ | ՀայՇտեմ{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  <div class="ui container segment center-aligned">
+    <div class="morph">  
+      <h2 class="ui header center aligned blue page-header_">ՀայԲառ</h2>
+      <div class="ui centered grid">
+        <div class="row">
+          <div class="ten wide column">
+            <div class="ui segments">
+              <div class="ui segment">
+                <div class="ui icon message">
+                  <i class="selected radio icon"></i>
+                  <div class="content">
+                    <div class="header">
+                      Part-of-speech tags
+                    </div>
+                    <p>
+                      <a target="_blank" href="http://universaldependencies.org/hy/pos/" target="_blank">http://universaldependencies.org/hy/pos/</a> 
+                    </p>
+                  </div>
+                </div>
+                <table class="ui celled table">
+                  <thead>
+                    <tr>
+                      <th>Open class words</th>
+                      <th>Closed class words</th>
+                      <th>Other</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><a target="_blank" href="http://universaldependencies.org/hy/pos/ADJ.html" class="doclink doclabel" title="hy ADJ">ADJ</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org/hy/pos/ADP.html" class="doclink doclabel" title="hy ADP">ADP</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org/hy/pos/PUNCT.html" class="doclink doclabel" title="hy PUNCT">PUNCT</a></td>
+                    </tr>
+                    <tr>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/ADV.html" class="doclink doclabel" title="hy ADV">ADV</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/AUX_.html" class="doclink doclabel" title="hy AUX">AUX</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/SYM.html" class="doclink doclabel" title="hy SYM">SYM</a></td>
+                    </tr>
+                    <tr>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/INTJ.html" class="doclink doclabel" title="hy INTJ">INTJ</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/CCONJ.html" class="doclink doclabel" title="hy CCONJ">CCONJ</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/X.html" class="doclink doclabel" title="hy X">X</a></td>
+                    </tr>
+                    <tr>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/NOUN.html" class="doclink doclabel" title="hy NOUN">NOUN</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/DET.html" class="doclink doclabel" title="hy DET">DET</a></td>
+                      <td> </td>
+                    </tr>
+                    <tr>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/PROPN.html" class="doclink doclabel" title="hy PROPN">PROPN</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/NUM.html" class="doclink doclabel" title="hy NUM">NUM</a></td>
+                      <td> </td>
+                    </tr>
+                    <tr>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/VERB.html" class="doclink doclabel" title="hy VERB">VERB</a></td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/PART.html" class="doclink doclabel" title="hy PART">PART</a></td>
+                      <td> </td>
+                    </tr>
+                    <tr>
+                      <td> </td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/PRON.html" class="doclink doclabel" title="hy PRON">PRON</a></td>
+                      <td> </td>
+                    </tr>
+                    <tr>
+                      <td> </td>
+                      <td><a target="_blank" href="http://universaldependencies.org//hy/pos/SCONJ.html" class="doclink doclabel" title="hy SCONJ">SCONJ</a></td>
+                      <td> </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="ui segment">
+                <div class="ui icon message">
+                  <i class="settings icon"></i>
+                  <div class="content">
+                    <div class="header">
+                      POS Features
+                    </div>
+                    <p>
+                      <a target="_blank" href="http://universaldependencies.org/hy/feat/" target="_blank">http://universaldependencies.org/hy/feat/</a> 
+                    </p>
+                  </div>
+                </div>
+                <table class="ui celled table">
+                  <tbody>
+                    <tr>
+                    <td class="top aligned">
+                      <table class="ui celled table">
+                        <tbody><tr><td><strong>Lexical features</strong></td></tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/PronType.html" class="doclink doclabel" title="hy PronType">PronType</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/NumType.html" class="doclink doclabel" title="hy NumType">NumType</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Poss.html" class="doclink doclabel" title="hy Poss">Poss</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Reflex.html" class="doclink doclabel" title="hy Reflex">Reflex</a></td>
+                        </tr>
+                      </tbody></table>
+                    </td>
+                    <td class="top aligned">
+                      <table class="ui celled table">
+                        <tbody><tr><td colspan="3"><strong>Inflectional features</strong></td></tr>
+                        <tr>
+                          <td><i>Nominal</i></td>
+                          <td><i>Verbal</i></td>
+                        </tr>
+                        <tr>
+                          <td><a href="/hu/feat/Gender.html" class="doclink doclabel" title="hu Gender">Gender</a></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/VerbForm.html" class="doclink doclabel" title="hy VerbForm">VerbForm</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Animacy.html" class="doclink doclabel" title="hy Animacy">Animacy</a></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Mood.html" class="doclink doclabel" title="hy Mood">Mood</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Number.html" class="doclink doclabel" title="hy Number">Number</a></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Tense.html" class="doclink doclabel" title="hy Tense">Tense</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Case.html" class="doclink doclabel" title="hy Case">Case</a></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Aspect.html" class="doclink doclabel" title="hy Aspect">Aspect</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Definite.html" class="doclink doclabel" title="hy Definite">Definite</a></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Voice.html" class="doclink doclabel" title="hy Voice">Voice</a></td>
+                        </tr>
+                        <tr>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Degree.html" class="doclink doclabel" title="hy Degree">Degree</a></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Person.html" class="doclink doclabel" title="hy Person">Person</a></td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a target="_blank" href="http://universaldependencies.org/hy/feat/Polarity.html" class="doclink doclabel" title="hy Polarity">Polarity</a></td>
+                        </tr>
+                      </tbody></table>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

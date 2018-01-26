@@ -9,6 +9,7 @@ urlpatterns = [
   url(r'^admin/', admin.site.urls),
   url(r'^$', core_views.HomePageView.as_view() , name='home'),
   url(r'^about/$', core_views.AboutPageView.as_view() , name='about'),
+  url(r'^morph/$', core_views.MorphPageView.as_view() , name='morph'),
   url(r'^user/', include('user.urls')),
   url(r'^bibliography/', include('bibliography.urls')),
   url(r'^tokenization/', include('tokenization.urls')),

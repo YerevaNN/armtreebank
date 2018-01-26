@@ -249,6 +249,17 @@
             if( pos ) html.find('.tokens').css('margin-left', pos['margin']).data('pos', pos['pos']);
             html.find('.token_item').outerWidth( width + '%');
             $('.tokenization .result').html(html);
+
+            $('.modal#check-tokenization .content .tok-res').val(data['tokenization']);
+            $('.modal#check-tokenization .content .sentence').val(data['sentence']);
+            $('.modal#check-tokenization .content .biblg').val(data['biblg']);
+
+            $('.modal#dep-tree .content .dep-tree').val(data['dep_tree'].replace(/\\t/g, '\t'));
+            $('.modal#dep-tree .content .dep-tree-formui').empty();
+            updateDepTreeForm();
+
+            $('.modal#dep-tree .content .sentence').val(data['sentence']);
+            $('.modal#dep-tree .content .biblg').val(data['biblg']);
           }
         });
       }
@@ -312,6 +323,7 @@
         
         if(!sentence) sentence = 2;
         
+        $('.tokenization .sentence').html('<div class="ui message">Խնդրում ենք սպասել..</div>');
         core.biblg.sentence(biblgID, sentence - 1);
       },
       nextSentence: function(){
@@ -320,6 +332,7 @@
         
         if(!sentence) sentence = 0;
         
+        $('.tokenization .sentence').html('<div class="ui message">Խնդրում ենք սպասել..</div>');
         core.biblg.sentence(biblgID, sentence + 1);
       },
       submitWord: function(event, pos){
@@ -337,6 +350,8 @@
               $(event.target).closest('.token_item').find('.ui.button').removeClass('green');
               $(event.target).addClass('green');
             }
+            if( data['tree_tagged'] )
+              tagCurrSentence();
           }
           else $(event.target).addClass('red');
         });
@@ -344,9 +359,16 @@
       checkWord: function(){
         $('.ui.modal#check-word').modal('show');
       },
-      newWord: function(){
+      newWord: function(id){
         $('.modal#new-word .button').removeClass('red').removeClass('green');
         $('.modal#new-word .form').trigger('reset');
+
+        var word = $('.sentence .tokens .token_item#t-' + id).data('word');
+        try {
+          word = word.toLowerCase();
+        } catch(e){}
+        
+        $('.ui.modal#new-word input[name=word]').val(word);
         $('.ui.modal#new-word').modal('show');
       },
       prevWord: function(){
@@ -365,6 +387,16 @@
         $('.modal#new-word .extra.field .pos.' + pos).removeClass('hidden');
         $('.modal#new-word').modal('refresh');
       },
+      nounTplFields: function(type){
+        $('.modal#new-word .extra.field .pos.noun .features').addClass('hidden');
+        $('.modal#new-word .extra.field .pos.noun .features.' + type).removeClass('hidden');
+        $('.modal#new-word').modal('refresh');
+      },
+      verbTplFields: function(type){
+        $('.modal#new-word .extra.field .pos.verb .features').addClass('hidden');
+        $('.modal#new-word .extra.field .pos.verb .features.' + type).removeClass('hidden');
+        $('.modal#new-word').modal('refresh');
+      },
       wordOverview: function(){
          var form = $('.modal#new-word .form');
     
@@ -377,6 +409,52 @@
           }
         });
       },
+      checkTokenization: function(){
+        $('.modal#check-tokenization').modal('show');
+      },
+      saveTokenization: function(){
+
+        var form = $('.modal#check-tokenization .form');
+        form.find('.button').addClass('loading');
+
+        form.ajaxForm({
+          success: function( data ) {
+            form.find('.button').removeClass('loading');
+            if( data['type'] == 'ok' ) {
+              form.find('.button').addClass('green');
+              tagCurrSentence();
+              setTimeout(function(){ 
+                $('.modal#check-tokenization').modal('hide');
+                form.find('.button').removeClass('green');
+              }, 500);
+            } else form.find('.button').addClass('red');
+          }
+        }).submit();
+
+      },
+      viewTree: function(){
+        $('.modal#dep-tree').modal('show');
+      },
+      saveTree: function(){
+
+        var form = $('.modal#dep-tree .form');
+        form.find('.button').addClass('loading');
+
+        form.ajaxForm({
+          success: function( data ) {
+            form.find('.button').removeClass('loading');
+            if( data['type'] == 'ok' ) {
+              form.find('.button').addClass('green');
+              setTimeout(function(){ 
+                $('.modal#dep-tree').modal('hide');
+                form.find('.button').removeClass('green');
+              }, 500);
+            } else form.find('.button').addClass('red');
+          }
+        }).submit();
+
+
+      },
     },
   };
   
@@ -385,6 +463,14 @@
 
     var form = $('.modal#new-word .form');
     
+    var disableFields = form.find('.field.extra .hidden.pos');
+    var copyFields = disableFields.clone();
+    copyFields.find('.init').each(function(){
+      $(this).removeClass('init');
+    });
+
+    disableFields.remove();
+
     form.ajaxForm({
       success: function( data ) {
         $('.modal#new-word .button').removeClass('loading');
@@ -393,6 +479,8 @@
           tagCurrSentence();
           setTimeout(function(){ $('.modal#new-word').modal('hide') }, 500);
         } else $('.modal#new-word .button').addClass('red');
+
+        copyFields.appendTo(form.find('.field.extra'));
       }
     }).submit();
   }
@@ -405,9 +493,80 @@
       'margin': $('.tokenization .tokens-block .tokens').css('margin-left'),
       'pos': $('.tokenization .tokens-block .tokens').data('pos')
     };
+    $('.tokenization .tokens-block').html('Loading..');
     core.biblg.sentence(biblgID, sentence, pos);
   }
+
+  var depLabels = ['nsubj', 'list', 'obj', 'iobj', 'csubj', 'ccomp', 'xcomp', 'obl', 'vocative', 'expl', 'dislocated', 'advcl', 'advmod', 'discourse', 'aux', 'cop', 'mark', 'nmod', 'appos', 'nummod', 'acl', 'amod', 'det', 'clf', 'case', 'conj', 'cc', 'fixed', 'flat', 'compound', 'parataxis', 'orphan', 'goeswith', 'reparandum', 'punct', 'root', 'dep'];
+  var deprelOptions = '';
+  depLabels.forEach(function(i){ deprelOptions += '<option value="'+i+'">'+i+'</option>'});
+  var depRelSelect = '<select><option disabled selected>Deprel</option>' + deprelOptions + '</select>';
+
+  function updateDepTreeForm(){
+    var tree = $('.modal#dep-tree .dep-tree').val();
+    var treeUI = $('.modal#dep-tree .dep-tree-formui');
+    treeUI.empty();
+
+    tree.split('\n').forEach(function(elem, index){
+      if(elem) {
+        var node = elem.split('\t');
+        var spaceafterVal = Boolean(node[9].search('SpaceAfter=No'));
+        var rootVal = node[6];
+        var deprelVal = node[7];
+
+        var depRel = $(depRelSelect).data('id', index).addClass('inp dep');
+        var rootRel = $('<input style="width: 100%;" value="'+rootVal+'">').data('id', index).addClass('inp root');
+        var spaceAfter = $('<input tabindex="-1" '+(!spaceafterVal?'checked':'')+' value="SpaceAfter=No" type="checkbox">').data('id', index).addClass('inp spaceafter');
+
+        depRel.val(deprelVal);
+
+        var nodeHTML = $('<div class="row"></div>');
+        $('<div class="five wide column">'+node[0]+'\t'+node[1]+'\t</div>').appendTo(nodeHTML);
+
+        var depBox = $('<div class="three wide column"></div>');
+        var rootBox = $('<div class="two wide column"></div>');
+        depRel.appendTo(depBox);
+        depBox.appendTo(nodeHTML);
+        rootRel.appendTo(rootBox);
+        rootBox.appendTo(nodeHTML);
+
+        $('<div class="four wide column">SpaceAfter=No:</div>').appendTo(nodeHTML);
+        var spaceBox = $('<div class="one wide column"></div>');
+        spaceAfter.appendTo(spaceBox);
+        spaceBox.appendTo(nodeHTML);
+
+        $(nodeHTML).appendTo(treeUI);
+      }
+    });
+
+    treeUI.find('.inp.root, .inp.dep, .inp.spaceafter').on('change', function(event){
+      var trigger = $(this);
+      if(trigger.hasClass('dep')) insertIntoTree(trigger.data('id'), 7, trigger.val());
+      else if(trigger.hasClass('root')) insertIntoTree(trigger.data('id'), 6, trigger.val());
+      else if(trigger.hasClass('spaceafter')) insertIntoTree(trigger.data('id'), 9, trigger.val());
+    });
+  }
   
+  function insertIntoTree(index, featType, val){
+    var tree = $('.modal#dep-tree .dep-tree');
+
+    var updTree = [];
+    tree.val().split('\n').forEach(function(elem, i){
+      if(i == index) {
+        var node = elem.split('\t');
+
+        if( featType == 9 && node[featType] != '_')
+          node[featType] = '_';
+        else
+          node[featType] = val || '_';
+
+        updTree.push(node.join('\t'));
+      } else updTree.push(elem);
+    });
+
+    tree.val(updTree.join('\n'));
+  }
+
   function getCookie(c_name) {
     if (document.cookie.length > 0) {
       c_start = document.cookie.indexOf(c_name + "=");
@@ -425,6 +584,28 @@
     $.ajaxSetup({
       headers: { "X-CSRFToken": getCookie("csrftoken") }
     });
+    setTimeout(function(){
+      
+      $(document).delegate('.tab-teaxtarea', 'keydown', function(e) {
+        var keyCode = e.keyCode || e.which;
+
+        if (keyCode == 9) {
+          e.preventDefault();
+          var start = this.selectionStart;
+          var end = this.selectionEnd;
+
+          // set textarea value to: text before caret + tab + text after caret
+          $(this).val($(this).val().substring(0, start)
+                      + "\t"
+                      + $(this).val().substring(end));
+
+          // put caret at right position again
+          this.selectionStart =
+          this.selectionEnd = start + 1;
+        }
+      });
+
+    }, 500);
   });
  
 	$(window).bind("popstate", function( event ) {
@@ -435,4 +616,3 @@
   
   setInterval(core.init, 200);
   setInterval(core.semanticPlugin.init, 200);
-  

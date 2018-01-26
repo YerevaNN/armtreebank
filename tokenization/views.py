@@ -5,12 +5,11 @@ from django.template.loader import get_template
 from django.template import Template, Context
 from django.views.decorators.csrf import csrf_exempt
 
-from .parser_noun import NounParserFactory
-from .parser_verb import VerbParser
-from tokenization.utils import st_count_all, st_count_biblg
+from tokenization.utils import st_count_all, st_count_biblg, get_parser, extract_ud_features
 from bibliography.models import Bibliography
 from core.functions import base_context
-from .models import Sentence, Token, Word, Noun, Verb
+from .models import *
+from .forms import *
 from . import tokenizer
 from . import tagger
 
@@ -18,7 +17,7 @@ class TokenizationProcess(View):
   def get(self, request):
     context = base_context(request)
     return render(request, 'tokenization_process.html', context)
-    
+
 class BiblgTokensView(View):
   def get(self, request, biblg_id):
     context = base_context(request)
@@ -56,7 +55,7 @@ def process_result(request):
   try:
     T = tokenizer.Tokenizer(text)
     T.segmentation().tokenization()
-    result = get_template('tokenization_output.html').render(Context({'segments': T.output(), 'color': 'teal'}))
+    result = get_template('tokenization_output.html').render({'segments': T.output(), 'color': 'teal'})
   except Exception as E:
     response['response'] = 'Սխալմունք: {error}'.format(error=E)
     return JsonResponse(response)
@@ -223,7 +222,6 @@ def sentence_tokens(request, biblg_id , sentence_number):
     texts = [biblg.press.text]
   elif hasattr(biblg, 'fiction'):
     texts = [biblg.fiction.text]
-  
   i = 0
   segment = {}
   
@@ -231,12 +229,26 @@ def sentence_tokens(request, biblg_id , sentence_number):
   if sentence_number < 1:
     sentence_number = 1
 
+  tokenization = []
+  tree_nodes = []
+  dep_tree = True
+
   for text in texts:
     sent = Sentence.objects.filter(text=text).filter(position=sentence_number)
     if len(sent):
       sent = sent[0]
       t_set = []
       for t in Token.objects.filter(sentence=sent).order_by('id'):
+        if '-' in t.position:
+          multi_t_range = t.position.split('-')
+          multi_t_range = int(multi_t_range[-1]) - int(multi_t_range[0])
+          tokenization.append([t.token, multi_t_range])
+        else:
+          tokenization.append([t.token, 0])
+
+        if not t.selected_tag:
+          dep_tree = False
+
         if t.checked == False:
           t.tag.clear()
           tgr = tagger.Tagger(t.token)
@@ -248,11 +260,20 @@ def sentence_tokens(request, biblg_id , sentence_number):
         daughters = []
         if t.tag:
           for tag in t.tag.all():
-            if tag.pos == 'noun':
-              daughters.append(('noun', Noun.objects.get(parent=tag),))
-            elif tag.pos == 'verb':
-              daughters.append(('verb', Verb.objects.get(parent=tag),))
-              
+            if tag.pos != 'num':
+              inst = globals()[tag.pos.title()].objects.get(parent=tag)
+              if tag.pos == 'noun' and inst.proper:
+                p = 'propn'
+              else:
+                p = tag.pos
+              daughters.append((p, inst, extract_ud_features(inst),))
+            else:
+              inst = Numeral.objects.get(parent=tag)
+              daughters.append(('num', inst, extract_ud_features(inst),))
+
+            if tag == t.selected_tag:
+              tree_nodes.append([t, inst, extract_ud_features(inst)])
+
         t_set.append((t.position, t.token, t, daughters))
       
       segment = {
@@ -262,10 +283,28 @@ def sentence_tokens(request, biblg_id , sentence_number):
         'tokens': t_set,
       }
   
+  #tokenization
+  tok_txt = ''
+  space_c = 0
+  for t in tokenization:
+    if space_c > 0:
+      tok_txt += '\t'
+      space_c -= 1
+    tok_txt += '{}\n'.format(t[0])
+    if t[1] > 0:
+      space_c = t[1] + 1
+
   response = {
     'type': 'ok',
     'response': 'Success.',
-    'res': get_template('tokenization_biblg_output.html').render(Context({'biblg': biblg, 'segment': segment, 'auth': request.user.is_authenticated}))
+    'res': get_template('tokenization_biblg_output.html').render({'biblg': biblg, 
+                                                                  'segment': segment, 
+                                                                  'auth': request.user.is_authenticated,
+                                                                  'tree': dep_tree}),
+    'tokenization': tok_txt,
+    'dep_tree': get_template('dep_tree.html').render({'nodes': tree_nodes}) if dep_tree else '',
+    'sentence': sentence_number,
+    'biblg': biblg_id,
   }
   return JsonResponse(response)
   
@@ -382,11 +421,17 @@ def token_submit_word(request, word_pos):
     else:
       response['response'] = 'Sentence not found'
       return JsonResponse(response)
-          
+         
+  tree = True
+  for t in Token.objects.filter(sentence=snt):
+    if not t.selected_tag:
+      tree = False
+
   response = {
     'type': 'ok',
     'response': 'Success',
     'act': act,
+    'tree_tagged': tree,
   }
   return JsonResponse(response)
 
@@ -407,42 +452,22 @@ def new_word(request):
   if not request.POST.get('word') or not request.POST.get('tpl'):
     response['response'] = 'Lost data.'
     return JsonResponse(response)
-    
-  word = request.POST.get('word')
-  tpl = request.POST.get('tpl')
-  
-  if tpl[:4] == 'conj':
-    try:
-      p = VerbParser('{tpl}|{root}'.format(tpl=tpl,root=request.POST.get('verb_root')), word)
-      p.parse()
-    except Exception as E:
-      response['response'] = '{}'.format(E)
-      return JsonResponse(response)
-    else:
-      response = {
-        'type': 'ok',
-        'response': 'Success',
-      }
-      return JsonResponse(response)
-  elif tpl[:7] == 'hy-noun':
-    a_on = '|a=on' if request.POST.get('noun_a') else ''
-    pl_on = '|pl=on' if request.POST.get('noun_pl') else ''
-    unc_on = '|unc=on' if request.POST.get('noun_unc') else ''
-    n_on = '|n=on' if request.POST.get('noun_n') else ''
-    obl_stem = '||{}'.format(request.POST.get('noun_o_stem')) if request.POST.get('noun_o_stem') else ''
-    sing_stem = '||||{}'.format(request.POST.get('noun_s_stem')) if request.POST.get('noun_s_stem') else ''
-    tpl = ''.join(['{{', tpl, a_on, pl_on, unc_on, n_on, obl_stem, sing_stem, '}}'])
-    try:
-      p = NounParserFactory.parser(word, tpl)
-      p.save()
-    except Exception as E:
-      return JsonResponse(response)
-    else:
-      response = {
-        'type': 'ok',
-        'response': 'Success',
-      }
-      return JsonResponse(response)
+
+  parser = get_parser(request.POST.get('tpl'), request.POST)
+
+  parser.data_from_request(request)
+
+  try:
+    parser.save()
+  except Exception as E:
+    response['response'] = '{}'.format(E)
+    return JsonResponse(response)
+  else:
+    response = {
+      'type': 'ok',
+      'response': 'Success',
+    }
+    return JsonResponse(response)
     
 def word_overview(request):
   response = {
@@ -461,35 +486,147 @@ def word_overview(request):
   if not request.POST.get('word') or not request.POST.get('tpl'):
     response['response'] = 'Lost data.'
     return JsonResponse(response)
-    
-  word = request.POST.get('word')
-  tpl = request.POST.get('tpl')
+
+  parser = get_parser(request.POST.get('tpl'), request.POST)
   
-  if tpl[:4] == 'conj':
+  parser.data_from_request(request)
+
+  try:
+    output = parser.parse_html()
+  except Exception as E:
+    response['response'] = '{}'.format(E)
+    return JsonResponse(response)
+  else:
     response = {
       'type': 'ok',
       'response': 'Success',
-      'output': '<p>Verb</p>'
+      'output': output,
     }
     return JsonResponse(response)
-  elif tpl[:7] == 'hy-noun':
-    a_on = '|a=on' if request.POST.get('noun_a') else ''
-    pl_on = '|pl=on' if request.POST.get('noun_pl') else ''
-    unc_on = '|unc=on' if request.POST.get('noun_unc') else ''
-    n_on = '|n=on' if request.POST.get('noun_n') else ''
-    obl_stem = '||{}'.format(request.POST.get('noun_o_stem')) if request.POST.get('noun_o_stem') else ''
-    sing_stem = '||||{}'.format(request.POST.get('noun_s_stem')) if request.POST.get('noun_s_stem') else ''
-    tpl = ''.join(['{{', tpl, a_on, pl_on, unc_on, n_on, obl_stem, sing_stem, '}}'])
-    try:
-      p = NounParserFactory.parser(word, tpl)
-      output = p.parse_html()
-    except Exception as E:
-      response['response'] = '{}'.format(E)
-      return JsonResponse(response)
-    else:
-      response = {
-        'type': 'ok',
-        'response': 'Success',
-        'output': output,
-      }
-      return JsonResponse(response)
+
+
+def tokenization_save(request):
+  response = {
+    'type': 'error',
+    'response': "Սխալմունք",
+  }
+  
+  if request.method != 'POST':
+    response['response'] = 'Օգտագործեք \'post\' մեթոդը'
+    return JsonResponse(response)
+  
+  if not request.user.is_authenticated or not request.user.is_active:
+    response['response'] = 'Գրանցված չեք'
+    return JsonResponse(response)
+  
+  if not request.POST.get('biblg') or not request.POST.get('sentence') or not request.POST.get('tokenization'):
+    response['response'] = 'Lost data.'
+    return JsonResponse(response)
+  
+  try:
+    biblg = Bibliography.objects.get(id=request.POST.get('biblg'))
+  except Exception:
+    response['response'] = 'Bibliography not found'
+    return JsonResponse(response)
+
+  if hasattr(biblg, 'press'):
+    texts = [biblg.press.text]
+  elif hasattr(biblg, 'textbook'):
+    texts = biblg.textbook.texts.all()
+  elif hasattr(biblg, 'fiction'):
+    texts = [biblg.fiction.text]
+
+  tokens_text = filter(lambda x: x, request.POST.get('tokenization').split('\n'))
+  tokens = []
+  pos = 0
+  space_c = 0
+
+  for text in texts:
+    snt = Sentence.objects.filter(text=text).filter(position=request.POST.get('sentence')).order_by('position')
+    if len(snt):
+      Token.objects.filter(sentence=snt).delete()
+      for t in tokens_text:
+        pos += 1
+        if t.startswith('\t'):
+          if space_c == 0:
+            pos -= 1
+          space_c += 1
+          m_t = tokens[-space_c]
+          m_r = str(m_t[1]).split('-')
+          m_t[1] = '{}-{}'.format(m_r[0], pos)
+        else:
+          space_c = 0
+        tokens.append([t, pos])
+
+      for t in tokens:
+        if t[0]:
+          new_token = Token()
+          new_token.sentence = snt[0]
+          new_token.token = t[0]
+          new_token.position = t[1]
+          new_token.save()
+
+  response = {
+    'type': 'ok',
+    'response': 'Success',
+    #'tokens': tokens
+  }
+  return JsonResponse(response)
+
+def tree_save(request):
+  response = {
+    'type': 'error',
+    'response': "Սխալմունք",
+  }
+  
+  if request.method != 'POST':
+    response['response'] = 'Օգտագործեք \'post\' մեթոդը'
+    return JsonResponse(response)
+  
+  if not request.user.is_authenticated or not request.user.is_active:
+    response['response'] = 'Գրանցված չեք'
+    return JsonResponse(response)
+  
+  if not request.POST.get('biblg') or not request.POST.get('sentence') or not request.POST.get('conllu'):
+    response['response'] = 'Lost data.'
+    return JsonResponse(response)
+  
+  try:
+    biblg = Bibliography.objects.get(id=request.POST.get('biblg'))
+  except Exception:
+    response['response'] = 'Bibliography not found'
+    return JsonResponse(response)
+
+  if hasattr(biblg, 'press'):
+    texts = [biblg.press.text]
+  elif hasattr(biblg, 'textbook'):
+    texts = biblg.textbook.texts.all()
+  elif hasattr(biblg, 'fiction'):
+    texts = [biblg.fiction.text]
+
+  tokens_text = filter(lambda x: x, request.POST.get('conllu').split('\n'))
+
+  for text in texts:
+    snt = Sentence.objects.filter(text=text).filter(position=request.POST.get('sentence')).order_by('position')
+    if len(snt):
+      for token in tokens_text:
+        token_conllu = token.split('\t')
+        t_position = token_conllu[0]
+        try:
+          t_arc = int(token_conllu[-4])
+        except:
+          t_arc = 0
+        t_arc_label = token_conllu[-3]
+        tkn = Token.objects.filter(sentence=snt, position=t_position)
+        if len(tkn):
+          tkn = tkn[0]
+          tkn.arc = t_arc
+          tkn.arc_label = t_arc_label
+          tkn.trim_spaceafter = True if 'SpaceAfter=No' in token_conllu[-1] else False
+          tkn.save()
+
+  response = {
+    'type': 'ok',
+    'response': 'Success',
+  }
+  return JsonResponse(response)

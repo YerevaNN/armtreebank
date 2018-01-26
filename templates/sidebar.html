@@ -2,12 +2,13 @@
 <a class="ajax item" href="{% url 'home' %}">ՀայՇտեմ</a>
 <div class="right menu">
   <a class="ajax item" href="{% url 'about' %}">Նախագիծը</a>
+  <a class="ajax item" href="{% url 'morph' %}">ՀայԲառ</a>
   <a class="ajax item" href="{% url 'process' %}">ՀայՆիշ</a>
   <a class="ajax item" href="{% url 'bibliography' %}">Կորպուս</a>
 
   {% if auth %}
-  <a class="item">{{ user.user.first_name }}</a>
   <div class="item">
+    <span style="margin-right: 15px;">{{ user.user.first_name }}</span> 
     <div class="ui primary button" onclick="core.userAuth.signOut()">Դուրս գալ</div>
     <form id="sign-out-form" class="hidden" method="POST" action="{% url 'logout' %}">
       {% csrf_token %}
@@ -15,7 +16,8 @@
   </div>
   {% else %}
   <div class="item">
-      <div onclick="$('#signin-modal.modal').modal('show')" class="ui primary button">Մուտք գործել</div>
+    <span style="margin-right: 15px;">Հյուր</span> 
+    <div onclick="$('#signin-modal.modal').modal('show')" class="ui primary button">Մուտք գործել</div>
   </div>
   {% endif %}
 </div>

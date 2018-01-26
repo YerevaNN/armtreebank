@@ -1,0 +1,2 @@
+{% for t in nodes %}{{ t.0.position }}\t{{ t.0.token }}\t{% if t.1.lemma %}{{ t.1.lemma }}{% else %}{{ t.0.token }}{% endif %}\t{% if t.0.selected_tag.pos == 'noun' %}{% if t.1.proper == True %}PROPN{% else %}NOUN{% endif %}{% elif t.0.selected_tag.pos == 'numeral' %}NUM{% else %}{{ t.0.selected_tag.pos|upper }}{% endif %}\t_\t{{ t.2 }}\t{{ t.0.arc }}\t{% if t.0.arc_label %}{{ t.0.arc_label }}{% else %}-{% endif %}\t_\t{% if t.0.trim_spaceafter %}SpaceAfter=No{% else %}_{% endif %}
+{% endfor %}

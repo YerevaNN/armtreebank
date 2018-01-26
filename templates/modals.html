@@ -84,7 +84,7 @@
   <div class="content">
     <form class="ui form" method="POST" onchange="core.t_ui.wordOverview()" action="{% url 'new_word' %}">
       <div class="field">
-        <label>Բառույթ</label>
+        <label>Բառաձեւ</label>
         <input type="text" name="word" placeholder="Բառը">
       </div>
       <div class="field">
@@ -94,71 +94,138 @@
           <div class="default text">Template</div>
           <i class="dropdown icon"></i>
           <div class="menu">
-            <div class="item" data-value="hy-noun-ի-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-ի-ներ</div>
-            <div class="item" data-value="hy-noun-ի-եր" onclick="core.t_ui.openFields('noun')">hy-noun-ի-եր</div>
-            <div class="item" data-value="hy-noun-ություն" onclick="core.t_ui.openFields('noun')">hy-noun-ություն</div>
-            <div class="item" data-value="hy-noun-ութիւն" onclick="core.t_ui.openFields('noun')">hy-noun-ութիւն</div>
-            <div class="item" data-value="hy-noun-ու-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-ու-ներ</div>
-            <div class="item" data-value="hy-noun-ա-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-ա-ներ</div>
-            <div class="item" data-value="hy-noun-ան-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-ան-ներ</div>
-            <div class="item" data-value="hy-noun-ոջ-եր" onclick="core.t_ui.openFields('noun')">hy-noun-ոջ-եր</div>
-            <div class="item" data-value="hy-noun-ոջ-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-ոջ-ներ</div>
-            <div class="item" data-value="hy-noun-որ-եր" onclick="core.t_ui.openFields('noun')">hy-noun-որ-եր</div>
-            <div class="item" data-value="hy-noun-որ-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-որ-ներ</div>
-            <div class="item" data-value="hy-noun-վա-եր" onclick="core.t_ui.openFields('noun')">hy-noun-վա-եր</div>
-            <div class="item" data-value="hy-noun-վա-ներ" onclick="core.t_ui.openFields('noun')">hy-noun-վա-ներ</div>
-            <div class="item" data-value="hy-noun-ոջ-այք" onclick="core.t_ui.openFields('noun')">hy-noun-ոջ-այք</div>
-            <div class="item" data-value="hy-noun-ու-իք" onclick="core.t_ui.openFields('noun')">hy-noun-ու-իք</div>
-            <div class="item" data-value="hy-noun-ու-եր" onclick="core.t_ui.openFields('noun')">hy-noun-ու-եր</div>
-            <div class="item" data-value="hy-noun-ու-իկ" onclick="core.t_ui.openFields('noun')">hy-noun-ու-իկ</div>
-            <div class="item" data-value="conj.hy.al" onclick="core.t_ui.openFields('verb')">conj.hy.al</div>
-            <div class="item" data-value="conj.hy.el" onclick="core.t_ui.openFields('verb')">conj.hy.el</div>
-            <div class="item" data-value="conj.hy.նալ" onclick="core.t_ui.openFields('verb')">conj.hy.նալ</div>
-            <div class="item" data-value="conj.hy.ցնել" onclick="core.t_ui.openFields('verb')">conj.hy.ցնել</div>
+            <div class="item" data-value="noun" onclick="core.t_ui.openFields('noun')">NOUN</div>
+            <div class="item" data-value="verb" onclick="core.t_ui.openFields('verb')">VERB</div>
+            <div class="item" data-value="sconj" onclick="core.t_ui.openFields('sconj')">SCONJ</div>
+            <div class="item" data-value="cconj" onclick="core.t_ui.openFields('cconj')">CCONJ</div>
+            <div class="item" data-value="part" onclick="core.t_ui.openFields('part')">PART</div>
+            <div class="item" data-value="aux" onclick="core.t_ui.openFields('aux')">AUX</div>
+            <div class="item" data-value="punct" onclick="core.t_ui.openFields('punct')">PUNCT</div>
+            <div class="item" data-value="sym" onclick="core.t_ui.openFields('sym')">SYM</div>
+            <div class="item" data-value="x" onclick="core.t_ui.openFields('x')">X</div>
+            <div class="item" data-value="num" onclick="core.t_ui.openFields('num')">NUM</div>
+            <div class="item" data-value="intj" onclick="core.t_ui.openFields('intj')">INTJ</div>
+            <div class="item" data-value="pron" onclick="core.t_ui.openFields('pron')">PRON</div>
+            <div class="item" data-value="adj" onclick="core.t_ui.openFields('adj')">ADJ</div>
+            <div class="item" data-value="adv" onclick="core.t_ui.openFields('adv')">ADV</div>
+            <div class="item" data-value="adp" onclick="core.t_ui.openFields('adp')">ADP</div>
+            <div class="item" data-value="det" onclick="core.t_ui.openFields('det')">DET</div>
           </div>
         </div>
       </div>
       <div class="field extra hidden">
-        <div class="noun hidden pos">
-          <div class="field">
-            <label>Oblique stem</label>
-            <input type="text" name="noun_o_stem" placeholder="Oblique stem">
-          </div>
-          <div class="field">
-            <label>Singular stem</label>
-            <input type="text" name="noun_s_stem" placeholder="Singular stem">
-          </div>
-          <div class="field">
-            <div class="ui slider checkbox">
-              <input type="checkbox" name="noun_a" tabindex="0" class="hidden">
-              <label>Animate</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui slider checkbox">
-              <input type="checkbox" name="noun_pl" tabindex="0" class="hidden">
-              <label>Plural-only</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui slider checkbox">
-              <input type="checkbox" name="noun_unc" tabindex="0" class="hidden">
-              <label>Uncountable</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui slider checkbox">
-              <input type="checkbox" name="noun_n" tabindex="0" class="hidden">
-              <label>Nominalized</label>
-            </div>
-          </div>
-        </div>
         <div class="verb hidden pos">
           <div class="field">
-            <label>Root</label>
-            <input type="text" name="verb_root" placeholder="Root">
+            <label>Verb Templates</label>
+            <div class="ui selection dropdown">
+              <input type="hidden" name="verb_tpl">
+              <div class="default text">Template</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">
+                <div class="item" data-value="manual" onclick="core.t_ui.verbTplFields('manually')">Manually</div>
+                <div class="item" data-value="ել" onclick="core.t_ui.verbTplFields('parser')">-ել</div>
+                <div class="item" data-value="ալ" onclick="core.t_ui.verbTplFields('parser')">-ալ</div>
+              </div>
+            </div>
           </div>
+          <div class="features hidden manually">
+            {% for inp in verb_feature_form.manual %}
+              <div class="field">
+                <label for="{{ inp.id_for_label }}">{{ inp.label }}</label>
+                {{ inp }}
+              </div>
+            {% endfor %}
+            <div class="field"></div>
+          </div>
+          <div class="features hidden parser">
+            <div class="field"></div>
+          </div>
+          {% for inp in verb_feature_form.parser %}
+            <div class="field">
+              <label for="{{ inp.id_for_label }}">{{ inp.label }}</label>
+              {{ inp }}
+            </div>
+          {% endfor %}
         </div>
+        <div class="noun hidden pos">
+          <div class="field">
+            <label>Noun Templates</label>
+            <div class="ui selection dropdown">
+              <input type="hidden" name="noun_tpl">
+              <div class="default text">Template</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">
+                <div class="item" data-value="manual" onclick="core.t_ui.nounTplFields('manually')">Manually</div>
+                <div class="item" data-value="hy-noun-ի-ներ" onclick="core.t_ui.nounTplFields('parser')">[ի-ներ]</div>
+                <div class="item" data-value="hy-noun-ի-եր" onclick="core.t_ui.nounTplFields('parser')">[ի-եր]</div>
+                <div class="item" data-value="hy-noun-ություն" onclick="core.t_ui.nounTplFields('parser')">[ություն]</div>
+                <div class="item" data-value="hy-noun-ութիւն" onclick="core.t_ui.nounTplFields('parser')">[ութիւն]</div>
+                <div class="item" data-value="hy-noun-ու-ներ" onclick="core.t_ui.nounTplFields('parser')">[ու-ներ]</div>
+                <div class="item" data-value="hy-noun-ա-ներ" onclick="core.t_ui.nounTplFields('parser')">[ա-ներ]</div>
+                <div class="item" data-value="hy-noun-ան-ներ" onclick="core.t_ui.nounTplFields('parser')">[ան-ներ]</div>
+                <div class="item" data-value="hy-noun-ոջ-եր" onclick="core.t_ui.nounTplFields('parser')">[ոջ-եր]</div>
+                <div class="item" data-value="hy-noun-ոջ-ներ" onclick="core.t_ui.nounTplFields('parser')">[ոջ-ներ]</div>
+                <div class="item" data-value="hy-noun-որ-եր" onclick="core.t_ui.nounTplFields('parser')">[որ-եր]</div>
+                <div class="item" data-value="hy-noun-որ-ներ" onclick="core.t_ui.nounTplFields('parser')">[որ-ներ]</div>
+                <div class="item" data-value="hy-noun-վա-եր" onclick="core.t_ui.nounTplFields('parser')">[վա-եր]</div>
+                <div class="item" data-value="hy-noun-վա-ներ" onclick="core.t_ui.nounTplFields('parser')">[վա-ներ]</div>
+                <div class="item" data-value="hy-noun-ոջ-այք" onclick="core.t_ui.nounTplFields('parser')">[ոջ-այք]</div>
+                <div class="item" data-value="hy-noun-ու-իք" onclick="core.t_ui.nounTplFields('parser')">[ու-իք]</div>
+                <div class="item" data-value="hy-noun-ու-եր" onclick="core.t_ui.nounTplFields('parser')">[ու-եր]</div>
+                <div class="item" data-value="hy-noun-ու-իկ" onclick="core.t_ui.nounTplFields('parser')">[ու-իկ]</div>
+              </div>
+            </div>
+          </div>
+          <div class="features hidden manually">
+            {% for inp in noun_feature_form.manual %}
+              <div class="field">
+                <label for="{{ inp.id_for_label }}">{{ inp.label }}</label>
+                {{ inp }}
+              </div>
+            {% endfor %}
+            <div class="field"></div>
+          </div>
+          <div class="features hidden parser">
+            <div class="field">
+              <label>Oblique stem</label>
+              <input type="text" name="parser_o_stem" placeholder="Oblique stem">
+            </div>
+            <div class="field">
+              <label>Singular stem</label>
+              <input type="text" name="parser_s_stem" placeholder="Singular stem">
+            </div>
+            <div class="field">
+              <label>Number</label>
+              <div class="ui selection dropdown">
+                <input type="hidden" name="parser_number">
+                <i class="dropdown icon"></i>
+                <div class="default text">Number</div>
+                <div class="menu">
+                  <div class="item" data-value="pl_sing">Plural/Singular</div>
+                  <div class="item" data-value="col">Collective</div>
+                  <div class="item" data-value="assocpl">Assocpl</div>
+                </div>
+              </div>
+            </div>
+            <div class="field"></div>
+          </div>
+          {% for inp in noun_feature_form.parser %}
+            <div class="field">
+              <label for="{{ inp.id_for_label }}">{{ inp.label }}</label>
+              {{ inp }}
+            </div>
+          {% endfor %}
+        </div>
+        {% for form in feature_form_templates %}
+        <div class="{{ form.instance.POS }} hidden pos">
+           {% for inp in form %}
+            <div class="field">
+              <label for="{{ inp.id_for_label }}">{{ inp.label }}</label>
+              {{ inp }}
+            </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
       </div>
       <div class="field">
         <div class="ui button" onclick="saveNewWord()">Ավելացնել</div>
@@ -166,6 +233,45 @@
     </form>
     <div class="ui divider"></div>
     <div class="overview"></div>
+  </div>
+</div>
+<div id="check-tokenization" class="ui modal">
+  <div class="header">Ուղղել թոքենների սահմանազատումը</div>
+  <div class="content">
+    <form class="ui form" method="POST" action="{% url 'tokenization_save' %}">
+      <input type="hidden" name="sentence" class="sentence">
+      <input type="hidden" name="biblg" class="biblg">
+      <div class="field">
+        <label>Output:</label>
+        <textarea class="tok-res tab-teaxtarea" rows="32" name="tokenization" placeholder="..."></textarea>
+      </div>
+      <div class="field">
+        <div class="ui button" onclick="core.t_ui.saveTokenization()">Հաստատել</div>
+      </div>
+    </form>
+  </div>
+</div>
+<div id="dep-tree" class="ui modal">
+  <div class="header">Շարահյուսական ծառը</div>
+  <div class="content">
+    <div class="ui grid">
+      <div class="sixteen wide column">
+        <form class="ui form" method="POST" action="{% url 'tree_save' %}">
+          <input type="hidden" name="sentence" class="sentence">
+          <input type="hidden" name="biblg" class="biblg">
+          <div class="field">
+            <label>Conll-U:</label>
+            <textarea class="dep-tree tab-teaxtarea" rows="8" name="conllu" placeholder="..."></textarea>
+          </div>
+          <div class="field">
+            <div class="ui button" onclick="core.t_ui.saveTree()">Հաստատել</div>
+          </div>
+        </form>
+      </div>
+      <div class="sixteen wide column">
+        <div class="ui grid dep-tree-formui"></div>
+      </div>
+    </div>
   </div>
 </div>
 {% endif %}

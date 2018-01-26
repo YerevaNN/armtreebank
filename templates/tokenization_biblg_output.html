@@ -6,9 +6,13 @@
   </div>
   <div class="ui segment {{color}} secondary tokens-parent">
     <div class="tokens-block">
+      <div class="tinder-buttons">
+        <div class="ui button" onclick="core.t_ui.prevWord(event)"><</div>
+        <div class="ui button" onclick="core.t_ui.nextWord(event)">></div>
+      </div>
       <div class="tokens clearfix">
       {% for t in segment.tokens %}
-        <div class="token_item" data-token="{{ t.0 }}">
+        <div class="token_item" id="t-{{ t.0 }}" data-token="{{ t.0 }}" data-word="{{t.1}}">
           <p>
             <span class="id {{color}}">{{t.0}}</span>
             <span>{{t.1}}</span>
@@ -16,16 +20,17 @@
           <p>
           {% if t.2.tag.all %}
             {% for tag in t.3 %}
+              <p>
               <button class="ui button {% if t.2.checked and tag.1.parent == t.2.selected_tag %}green{% endif %}" onclick="core.t_ui.submitWord(event, {{ forloop.counter0 }})">
-              {% if tag.0 == 'noun' %}
-                { {{ tag.0 }}, {% if tag.1.parent.lemma %}{{ tag.1.parent.lemma }}{% else %}{{ tag.1 }}{% endif %}-{{ tag.1.declension_type }}-{{ tag.1.quantity_type }} }
-                { {{ tag.1.declension }}, {{ tag.1.quantity }}{% if tag.1.form %},{{ tag.1.form }}{% endif %} }
-                |{% if tag.1.animate %}a=on|{% endif %}{% if tag.1.plural_only %}pl=on|{% endif %}{% if tag.1.uncountable %}unc=on|{% endif %}
-              {% elif tag.0 == 'verb' %}
-                { {{ tag.0 }}, {% if tag.1.parent.lemma %}{{ tag.1.parent.lemma }}{% else %}{{ tag.1 }}{% endif %}-{{ tag.1.ending }} }
-                { {% if tag.1.demq %}Դեմք: {{ tag.1.demq }}, {% endif %}{{ tag.1.type }}, {{ tag.1.form }} }
-              {% endif %}
+              {{tag.1}} {% if tag.1.lemma %}{{ tag.1.lemma }}{% endif %} {{tag.0|upper}} {{tag.2}}
               </button>
+              <a href="/admin/tokenization/{% if tag.0 == 'num' %}numeral{% elif tag.0 == 'propn' %}noun{% else %}{{ tag.0 }}{% endif %}/{{ tag.1.id }}/change/" target="_blank">
+                <button class="mini blue ui button">Edit</button>
+              </a>
+              <a href="/admin/tokenization/word/{{ tag.1.parent.id }}/delete/" target="_blank">
+                <button class="mini red ui button">Delete</button>
+              </a>
+              </p>
             {% endfor %}
           {% else %}
             <button class="ui button disabled">Not defined</button>
@@ -33,7 +38,7 @@
           </p>
           {% if auth %}
           <p>
-            <button class="ui button" onclick="core.t_ui.newWord(event)">Ավելացնել</button>
+            <button class="ui button" onclick="core.t_ui.newWord('{{ t.0 }}')">Ավելացնել</button>
           </p>
           {% endif %}
         </div>
@@ -44,6 +49,12 @@
         <div class="ui button" onclick="core.t_ui.nextWord(event)">></div>
       </div>
     </div>
+    {% if tree %}
+    <div class="dep-tree">
+      <p></p>
+      <div class="ui button" onclick="core.t_ui.viewTree()">Շար. ծառը</div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% else %}
@@ -51,3 +62,40 @@
   <div>Վերջ</div>
 </div>
 {% endif %}
+
+{% comment %}
+  {% if tag.0 == 'noun' %}
+    {% include 'noun/ud.html' with noun=tag %}
+  {% elif tag.0 == 'verb' %}
+    { {{ tag.0 }}, {% if tag.1.parent.lemma %}{{ tag.1.parent.lemma }}{% else %}{{ tag.1 }}{% endif %}-{{ tag.1.ending }} }
+    { {% if tag.1.demq %}Դեմք: {{ tag.1.demq }}, {% endif %}{{ tag.1.type }}, {{ tag.1.form }} }
+  {% elif tag.0 == 'punct' %}
+    {% include 'punct/ud.html' with punct=tag %}
+  {% elif tag.0 == 'det' %}
+    {% include 'det/ud.html' with det=tag %}
+  {% elif tag.0 == 'intj' %}
+    {% include 'intj/ud.html' with intj=tag %}
+  {% elif tag.0 == 'adj' %}
+    {% include 'adj/ud.html' with adj=tag %}
+  {% elif tag.0 == 'adv' %}
+    {% include 'adv/ud.html' with adv=tag %}
+  {% elif tag.0 == 'adp' %}
+    {% include 'adp/ud.html' with adp=tag %}
+  {% elif tag.0 == 'sym' %}
+    {% include 'sym/ud.html' with sym=tag %}
+  {% elif tag.0 == 'x' %}
+    {% include 'x/ud.html' with x=tag %}
+  {% elif tag.0 == 'det' %}
+    {% include 'det/ud.html' with det=tag %}
+  {% elif tag.0 == 'sconj' %}
+    {% include 'sconj/ud.html' with sconj=tag %}
+  {% elif tag.0 == 'cconj' %}
+    {% include 'cconj/ud.html' with cconj=tag %}
+  {% elif tag.0 == 'num' %}
+    {% include 'num/ud.html' with num=tag %}
+  {% elif tag.0 == 'part' %}
+    {% include 'part/ud.html' with part=tag %}
+  {% elif tag.0 == 'pron' %}
+    {% include 'pron/ud.html' with pron=tag %}
+  {% endif %}
+{% endcomment %}

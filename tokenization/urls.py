@@ -13,4 +13,6 @@ urlpatterns = [
   url(r'^token/submit/(?P<word_pos>[0-9]+)/$', views.token_submit_word, name='token_submit_word'),
   url(r'^word/new/$', views.new_word, name='new_word'),
   url(r'^word/overview/$', views.word_overview, name='word_overview'),
+  url(r'^tokenization/save/$', views.tokenization_save, name='tokenization_save'),
+  url(r'^tree/save/$', views.tree_save, name='tree_save'),
 ]

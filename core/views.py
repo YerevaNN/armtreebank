@@ -13,3 +13,8 @@ class AboutPageView(View):
 
   def get(self, request):
     return render(request, 'about.html', base_context(request))
+
+class MorphPageView(View):
+
+  def get(self, request):
+    return render(request, 'morph.html', base_context(request))
